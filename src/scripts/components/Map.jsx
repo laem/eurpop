@@ -33,18 +33,19 @@ var Map = React.createClass({
 
     var cartogram = d3.cartogram()
       .projection(d3.geo.mercator()
-        .center([0.3, 60])
-        .scale(800)
+        .center([-20, 55])
+        .scale(1200)
         //.translate([width / 2, height / 2])
       )
       .value(function(d) {
-        return 1 - Math.random() / 2;
+        return d.properties.pop
+        //return 1 - Math.random() / 2;
       });
 
     var projection = d3.geo.mercator()
         // .rotate([0, 0])
         .center([10.3, 50])
-        .scale(700)
+        .scale(1000)
         .translate([width / 2, height / 2])
         // .precision(.1);
 
@@ -56,17 +57,29 @@ var Map = React.createClass({
         .attr("height", height);
 
     // Select european geometries only
-    var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK']
-    pays = pays.concat(['EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA', 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
+    //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
+    //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
+    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
+    var areas = {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 }
+    var pops = {'FRA': 64768389, 'ESP': 46505963, 'DEU': 81802257, 'GBR': 62348447, 'ITA': 60340328, 'CHE': 7581000 }
     data.objects.admin0.geometries = data.objects.admin0.geometries.filter(function(geometry) {
-       if (pays.indexOf(geometry.properties.iso_a3) > -1) {
-           return true
+       var code = geometry.properties.iso_a3
+       if (pays.indexOf(code) > -1) {
+            geometry.properties.area = areas[code]
+            geometry.properties.pop = pops[code]
+            return true
          }
     })
 
 
     // Get the GeoJSON from our filtered topoJSON
-    var states = topojson.feature(data, data.objects.admin0);
+
+    //this is the original data
+    //var states = topojson.feature(data, data.objects.admin0);
+
+    //this is the cartogrammed data
+    var states = cartogram(data, data.objects.admin0.geometries);
+    path = cartogram.path
 
     var nodes = [],
         links = [];

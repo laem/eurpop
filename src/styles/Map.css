@@ -10,5 +10,6 @@ path {
 }
 
 line {
-  stroke: #ddd;
+  stroke: #fff;
+  opacity: 0.1
 }

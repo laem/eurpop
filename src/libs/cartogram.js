@@ -50,7 +50,7 @@
               i1++;
             }
             projectedArcs[i2++]=out1;
-            
+
           }
 
       // path with identity projection
@@ -156,8 +156,8 @@
 
     var iterations = 8,
         projection = d3.geo.albers(),
-        properties = function(id) {
-          return {};
+        properties = function(obj) {
+          return obj.properties || {};
         },
         value = function(d) {
           return 1;
@@ -290,7 +290,7 @@
         ? o
         : copyObject(o);
   }
-  
+
   function copyObject(o) {
     var obj = {};
     for (var k in o) obj[k] = copy(o[k]);
@@ -318,6 +318,7 @@
 
     function geometry(o) {
       o = Object.create(o);
+      o.properties = o.properties;
       o.coordinates = geometryType[o.type](o.arcs);
       return o;
     }
