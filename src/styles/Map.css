@@ -1,0 +1,14 @@
+.Map{
+  border: 1px dashed #f00;
+}
+
+path {
+  fill: #000;
+  fill-opacity: .8;
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+line {
+  stroke: #ddd;
+}
