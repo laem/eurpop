@@ -13,24 +13,78 @@ var data = require('json!../../data/lala.json')
 
 var Map = React.createClass({
   getInitialState: function(){
-    return {}
+    return {
+      indicator: 'pop'
+    }
   },
   render: function () {
     return (
-        <div id="playground">
-          <p>You're broken ):</p>
-          <div className="log">{this.state.log}</div>
+        <div className="centered">
+          <h1>Europe's {this.state.indicator}</h1>
+          <div ref="playground">
+          </div>
+          <button onClick={this.toggle}>Toggle indicator</button>
         </div>
       );
   },
 
-  componentDidMount: function () {
-    /*this.setState({
-      log: data
-    })*/
+  toggle: function(){
+    var newState = this.state.indicator === 'pop' ? 'area' : 'pop'
+    this.setState({
+      indicator: newState
+    })
+  },
+
+  componentDidMount: function(){
+    this.componentDidUpdate()
+  },
+
+  componentDidUpdate: function () { var _this = this
+
     var width = 1800,
         height = 950;
 
+    var playground = this.refs.playground.getDOMNode()
+    playground.innerHTML = ''
+    
+    var svg = d3.select(playground).append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    // Select european geometries only
+    //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
+    //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
+    //Just a few for now
+    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
+
+    var facts = {
+      area: {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 },
+      pop: {'FRA': 64768389, 'ESP': 46505963, 'DEU': 81802257, 'GBR': 62348447, 'ITA': 60340328, 'CHE': 7581000 }
+    }
+    data.objects.admin0.geometries = data.objects.admin0.geometries.filter(function(geometry) {
+       var code = geometry.properties.iso_a3
+       if (pays.indexOf(code) > -1) {
+            geometry.properties.indicator = facts[_this.state.indicator][code]
+            return true
+         }
+    })
+
+
+    /* Get the GeoJSON from our filtered topoJSON */
+
+    /* this is the original data
+    var projection = d3.geo.mercator()
+        .center([10.3, 50])
+        .scale(1000)
+        .translate([width / 2, height / 2])
+        // .precision(.1);
+
+    var path = d3.geo.path().projection(projection)
+
+    var states = topojson.feature(data, data.objects.admin0);
+    */
+
+    /* this is the cartogrammed version */
     var cartogram = d3.cartogram()
       .projection(d3.geo.mercator()
         .center([-20, 55])
@@ -38,48 +92,12 @@ var Map = React.createClass({
         //.translate([width / 2, height / 2])
       )
       .value(function(d) {
-        return d.properties.pop
+        return d.properties.indicator
         //return 1 - Math.random() / 2;
       });
 
-    var projection = d3.geo.mercator()
-        // .rotate([0, 0])
-        .center([10.3, 50])
-        .scale(1000)
-        .translate([width / 2, height / 2])
-        // .precision(.1);
-
-    var path = d3.geo.path().projection(projection),
-        force = d3.layout.force().size([width, height]);
-
-    var svg = d3.select("#playground").append("svg")
-        .attr("width", width)
-        .attr("height", height);
-
-    // Select european geometries only
-    //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
-    //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
-    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
-    var areas = {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 }
-    var pops = {'FRA': 64768389, 'ESP': 46505963, 'DEU': 81802257, 'GBR': 62348447, 'ITA': 60340328, 'CHE': 7581000 }
-    data.objects.admin0.geometries = data.objects.admin0.geometries.filter(function(geometry) {
-       var code = geometry.properties.iso_a3
-       if (pays.indexOf(code) > -1) {
-            geometry.properties.area = areas[code]
-            geometry.properties.pop = pops[code]
-            return true
-         }
-    })
-
-
-    // Get the GeoJSON from our filtered topoJSON
-
-    //this is the original data
-    //var states = topojson.feature(data, data.objects.admin0);
-
-    //this is the cartogrammed data
     var states = cartogram(data, data.objects.admin0.geometries);
-    path = cartogram.path
+    var path = cartogram.path
 
     var nodes = [],
         links = [];
@@ -99,6 +117,8 @@ var Map = React.createClass({
       link.distance = Math.sqrt(dx * dx + dy * dy);
       links.push(link);
     });
+
+    var force = d3.layout.force().size([width, height]);
 
     force
         .gravity(0)

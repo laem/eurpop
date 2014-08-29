@@ -4,6 +4,15 @@ html, body {
   background: #222222;
 }
 
+h1 {
+  font-size: 32px;
+  font-weight: 200
+}
+
+.centered {
+  text-align: center
+}
+
 /* main */
 
 .main {
