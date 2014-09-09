@@ -5,11 +5,36 @@
 'use strict';
 
 var React = require('react/addons');
-require('../../styles/Map.css');
 require('../../libs/d3.v3.min.js')
+var Miso = require("miso.dataset");
+//require('../../libs/miso.ds.deps.0.4.1.js')
+//require('../../../node_modules/miso.dataset/dist/miso.ds.deps.0.4.1.js')
+
+require('../../styles/Map.css');
+
 var topojson = require('../../libs/topojson.v1.min.js')
 require('../../libs/cartogram.js')
 var data = require('json!../../data/lala.json')
+
+//Go get data from http://databank.worldbank.org
+//Put them in a google spreadsheet
+
+var ds = new Miso.Dataset({
+  importer : Miso.Dataset.Importers.GoogleSpreadsheet,
+  parser : Miso.Dataset.Parsers.GoogleSpreadsheet,
+  key : "0Asnl0xYK7V16dFpFVmZUUy1taXdFbUJGdGtVdFBXbFE",
+  worksheet : "1"
+});
+
+ds.fetch({
+  success : function() {
+    console.log(ds.columnNames());
+  },
+  error : function() {
+    console.log("Are you sure you are connected to the internet?");
+  }
+});
+
 
 var Map = React.createClass({
   getInitialState: function(){
@@ -46,7 +71,7 @@ var Map = React.createClass({
 
     var playground = this.refs.playground.getDOMNode()
     playground.innerHTML = ''
-    
+
     var svg = d3.select(playground).append("svg")
         .attr("width", width)
         .attr("height", height);
@@ -55,12 +80,16 @@ var Map = React.createClass({
     //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
     //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
     //Just a few for now
+    return
     var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
+    var measures = ['population', 'area']
+    var years = [2014, 2015, 2016, 2017, 2018, 2019, 2020]
 
     var facts = {
       area: {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 },
       pop: {'FRA': 64768389, 'ESP': 46505963, 'DEU': 81802257, 'GBR': 62348447, 'ITA': 60340328, 'CHE': 7581000 }
     }
+
     data.objects.admin0.geometries = data.objects.admin0.geometries.filter(function(geometry) {
        var code = geometry.properties.iso_a3
        if (pays.indexOf(code) > -1) {
@@ -87,7 +116,7 @@ var Map = React.createClass({
     /* this is the cartogrammed version */
     var cartogram = d3.cartogram()
       .projection(d3.geo.mercator()
-        .center([-20, 55])
+        .center([-15, 55])
         .scale(1200)
         //.translate([width / 2, height / 2])
       )
