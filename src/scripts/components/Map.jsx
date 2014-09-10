@@ -6,9 +6,6 @@
 
 var React = require('react/addons');
 require('../../libs/d3.v3.min.js')
-var Miso = require("miso.dataset");
-//require('../../libs/miso.ds.deps.0.4.1.js')
-//require('../../../node_modules/miso.dataset/dist/miso.ds.deps.0.4.1.js')
 
 require('../../styles/Map.css');
 
@@ -19,27 +16,15 @@ var data = require('json!../../data/lala.json')
 //Go get data from http://databank.worldbank.org
 //Put them in a google spreadsheet
 
-var ds = new Miso.Dataset({
-  importer : Miso.Dataset.Importers.GoogleSpreadsheet,
-  parser : Miso.Dataset.Parsers.GoogleSpreadsheet,
-  key : "0Asnl0xYK7V16dFpFVmZUUy1taXdFbUJGdGtVdFBXbFE",
-  worksheet : "1"
-});
 
-ds.fetch({
-  success : function() {
-    console.log(ds.columnNames());
-  },
-  error : function() {
-    console.log("Are you sure you are connected to the internet?");
-  }
-});
+
 
 
 var Map = React.createClass({
   getInitialState: function(){
     return {
-      indicator: 'pop'
+      indicator: 'pop',
+      dataFetched: false
     }
   },
   render: function () {
@@ -66,6 +51,13 @@ var Map = React.createClass({
 
   componentDidUpdate: function () { var _this = this
 
+    if (!this.props.ds){
+      return
+    }
+
+
+    console.log('yo')
+
     var width = 1800,
         height = 950;
 
@@ -80,7 +72,6 @@ var Map = React.createClass({
     //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
     //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
     //Just a few for now
-    return
     var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
     var measures = ['population', 'area']
     var years = [2014, 2015, 2016, 2017, 2018, 2019, 2020]
@@ -93,7 +84,13 @@ var Map = React.createClass({
     data.objects.admin0.geometries = data.objects.admin0.geometries.filter(function(geometry) {
        var code = geometry.properties.iso_a3
        if (pays.indexOf(code) > -1) {
-            geometry.properties.indicator = facts[_this.state.indicator][code]
+
+            var countries = _this.props.ds.column(['Country Code']).data
+            var index = countries.indexOf(code)
+            var measure = _this.props.ds.column(['2020 [YR2020]']).data[index]
+
+            geometry.properties.indicator = measure
+            //geometry.properties.indicator = facts[_this.state.indicator][code]
             return true
          }
     })
