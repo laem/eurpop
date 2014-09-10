@@ -15,7 +15,8 @@ require('../../styles/Map.css');
 var topojson = require('../../libs/topojson.v1.min.js')
 require('../../libs/cartogram.js')
 var data = require('json!../../data/lala.json')
-
+//TODO
+// Rang des pays se transmet
 //Go get data from http://databank.worldbank.org
 //Put them in a google spreadsheet
 
