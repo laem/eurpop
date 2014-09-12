@@ -19,6 +19,7 @@ var Map = require('./Map.jsx')
 
 var imageURL = '../../images/yeoman.png';
 
+
 var ForceCartogramApp = React.createClass({
   getInitialState: function(){
     return {ds: null}
@@ -55,5 +56,6 @@ var ForceCartogramApp = React.createClass({
 });
 
 React.renderComponent(<ForceCartogramApp />, document.getElementById('content')); // jshint ignore:line
+
 
 module.exports = ForceCartogramApp;

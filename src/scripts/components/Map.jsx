@@ -13,29 +13,35 @@ var topojson = require('../../libs/topojson.v1.min.js')
 require('../../libs/cartogram.js')
 var data = require('json!../../data/lala.json')
 
+var Dragdealer = require('../../libs/dragdealer.js')
 //Go get data from http://databank.worldbank.org
 //Put them in a google spreadsheet
-
-
-
-
 
 var Map = React.createClass({
   getInitialState: function(){
     return {
       indicator: 'pop',
-      dataFetched: false
+      dataFetched: false,
+      year: 1960
     }
   },
   render: function () {
     return (
         <div className="centered">
-          <h1>Europe's {this.state.indicator}</h1>
+          <div className="dragdealer" id="timeSlider">
+            <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
+          </div>
+        {/* <h1>Europe's {this.state.indicator}</h1>*/}
           <div ref="playground">
           </div>
           <button onClick={this.toggle}>Toggle indicator</button>
+
         </div>
       );
+  },
+
+  sliderChange: function(you){
+
   },
 
   toggle: function(){
@@ -47,6 +53,15 @@ var Map = React.createClass({
 
   componentDidMount: function(){
     this.componentDidUpdate()
+    new Dragdealer('timeSlider',{
+      steps: 30,
+      animationCallback: this.timeChanged
+    });
+  },
+
+  timeChanged: function(x, y){
+    var timeHandle = this.refs.timeHandle.getDOMNode()
+    this.setState({year: 1960 + Math.round(x * 90)})
   },
 
   componentDidUpdate: function () { var _this = this
@@ -54,7 +69,6 @@ var Map = React.createClass({
     if (!this.props.ds){
       return
     }
-
 
     console.log('yo')
 
@@ -87,7 +101,7 @@ var Map = React.createClass({
 
             var countries = _this.props.ds.column(['Country Code']).data
             var index = countries.indexOf(code)
-            var measure = _this.props.ds.column(['2020 [YR2020]']).data[index]
+            var measure = _this.props.ds.column([_this.state.year]).data[index]
 
             geometry.properties.indicator = measure
             //geometry.properties.indicator = facts[_this.state.indicator][code]
