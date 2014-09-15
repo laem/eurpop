@@ -21,9 +21,9 @@ var Dragdealer = require('../../libs/dragdealer.js')
 var Map = React.createClass({
   getInitialState: function(){
     return {
-      indicator: 'pop',
-      dataFetched: false,
-      year: 1960
+      year: 1960,
+      population: null, // datasets
+      fertility: null // datasets
     }
   },
   render: function () {
@@ -33,9 +33,9 @@ var Map = React.createClass({
             <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
           </div>
         {/* <h1>Europe's {this.state.indicator}</h1>*/}
-          <div ref="playground" style={{display: 'none'}}>
+          <div ref="playground" style={{display: 'block'}}>
           </div>
-          <div id="legend"></div>
+          <ul id="legend"></ul>
           <button onClick={this.toggle}>Toggle indicator</button>
 
         </div>
@@ -68,9 +68,10 @@ var Map = React.createClass({
 
   componentDidUpdate: function () { var _this = this
 
-    if (!this.props.ds){
+    if (!this.props.population || !this.props.fertility){
       return
     }
+
 
     console.log('yo')
 
@@ -95,11 +96,11 @@ var Map = React.createClass({
        var code = geometry.properties.iso_a3
        if (pays.indexOf(code) > -1) {
 
-            var countries = _this.props.ds.column(['Country Code']).data
+            var countries = _this.props.population.column(['Country Code']).data
             var index = countries.indexOf(code)
-            var measure = _this.props.ds.column([_this.state.year]).data[index]
+            var measure = _this.props.population.column([_this.state.year]).data[index]
 
-            geometry.properties.indicator = measure
+            geometry.properties.population = measure
             //geometry.properties.indicator = facts[_this.state.indicator][code]
             return true
          }
@@ -128,7 +129,7 @@ var Map = React.createClass({
         //.translate([width / 2, height / 2])
       )
       .value(function(d) {
-        return d.properties.indicator
+        return d.properties.population
         //return 1 - Math.random() / 2;
       });
 
@@ -153,6 +154,30 @@ var Map = React.createClass({
       link.distance = Math.sqrt(dx * dx + dy * dy);
       links.push(link);
     });
+
+    /* Legend.
+    See http://eyeseast.github.io/visible-data/2013/08/27/responsive-legends-with-d3/
+     */
+    var colors = d3.scale.quantize()
+    .range(colorbrewer.RdYlGn[7])
+    .domain([1, 2.1])
+
+    var legend = d3.select('#legend')
+    legend.selectAll('*').remove()
+
+    var keys = legend.selectAll('li.key')
+        .data(colors.range());
+
+    keys.enter().append('li')
+        .attr('class', 'key')
+        .style('border-top-color', String)
+        .text(function(d) {
+            var r = colors.invertExtent(d);
+            //return formats.percent(r[0]);
+            return  d3.format('.2f')(r[0])
+        });
+
+    /* Force map */
 
     var force = d3.layout.force().size([width, height]);
 
@@ -179,7 +204,16 @@ var Map = React.createClass({
       .append("path")
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
         .attr("d", function(d) { return path(d.feature); })
-        .style('fill', 'blue')
+        .style('fill', function(d){
+          var code = d.feature.properties.iso_a3
+
+          var countries = _this.props.fertility.column(['Country Code']).data
+          var index = countries.indexOf(code)
+          var measure = _this.props.fertility.column([_this.state.year]).data[index]
+          measure = parseFloat(measure.replace(',', '.'))
+
+          return colors(measure)
+        })
 
     force.on("tick", function(e) {
       link.attr("x1", function(d) { return d.source.x; })
@@ -192,28 +226,7 @@ var Map = React.createClass({
       })
     });
 
-    /* Legend.
-    See http://eyeseast.github.io/visible-data/2013/08/27/responsive-legends-with-d3/
-     */
-    var colors = d3.scale.quantize()
-    .range(colorbrewer.Greens[7]);
 
-    var legend = d3.select('#legend')
-      .append('ul')
-        .attr('class', 'list-inline');
-
-    var keys = legend.selectAll('li.key')
-        .data(colors.range());
-
-    keys.enter().append('li')
-        .attr('class', 'key')
-        .style('border-top-color', String)
-        .text(function(d) {
-            var r = colors.invertExtent(d);
-            //return formats.percent(r[0]);
-            console.log(r[0])
-            return r[0]
-        });
   }
 });
 

@@ -14,6 +14,7 @@ var ReactTransitionGroup = React.addons.TransitionGroup;
 require('../../styles/reset.css');
 require('../../styles/main.css');
 var Miso = require("miso.dataset");
+var _ = require("underscore.deferred");
 
 var Map = require('./Map.jsx')
 
@@ -26,29 +27,30 @@ var ForceCartogramApp = React.createClass({
   },
   componentDidMount: function(){
     var _this = this
-    var ds = new Miso.Dataset({
+    var spreadsheetKey = '1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ'
+    var populationDs = new Miso.Dataset({
       importer : Miso.Dataset.Importers.GoogleSpreadsheet,
       parser : Miso.Dataset.Parsers.GoogleSpreadsheet,
-      key : "1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ",
+      key : spreadsheetKey,
       worksheet : "1"
     });
 
-    var dsProp;
+    var fertilityDs = new Miso.Dataset({
+      importer : Miso.Dataset.Importers.GoogleSpreadsheet,
+      parser : Miso.Dataset.Parsers.GoogleSpreadsheet,
+      key : spreadsheetKey,
+      worksheet : "2"
+    });
 
-    ds.fetch({
-      success : function() {
-        _this.setState({ds: ds})
-      },
-      error : function() {
-        console.log("Are you sure you are connected to the internet?");
-      }
+    _.when(populationDs.fetch(), fertilityDs.fetch()).then(function() {
+      _this.setState({population: populationDs, fertility: fertilityDs})
     });
   },
   render: function() {
     return (
       <div className='main'>
         <ReactTransitionGroup transitionName="fade">
-          <Map ds={this.state.ds}/>
+          <Map population={this.state.population} fertility={this.state.fertility}/>
         </ReactTransitionGroup>
       </div>
     );
