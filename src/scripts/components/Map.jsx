@@ -6,6 +6,7 @@
 
 var React = require('react/addons');
 require('../../libs/d3.v3.min.js')
+var colorbrewer = require('../../libs/colorbrewer.js')
 
 require('../../styles/Map.css');
 
@@ -32,8 +33,9 @@ var Map = React.createClass({
             <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
           </div>
         {/* <h1>Europe's {this.state.indicator}</h1>*/}
-          <div ref="playground">
+          <div ref="playground" style={{display: 'none'}}>
           </div>
+          <div id="legend"></div>
           <button onClick={this.toggle}>Toggle indicator</button>
 
         </div>
@@ -82,18 +84,12 @@ var Map = React.createClass({
         .attr("width", width)
         .attr("height", height);
 
-    // Select european geometries only
+    // Select all european geometries
     //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
     //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
-    //Just a few for now
-    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
-    var measures = ['population', 'area']
-    var years = [2014, 2015, 2016, 2017, 2018, 2019, 2020]
 
-    var facts = {
-      area: {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 },
-      pop: {'FRA': 64768389, 'ESP': 46505963, 'DEU': 81802257, 'GBR': 62348447, 'ITA': 60340328, 'CHE': 7581000 }
-    }
+    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
+    var area = {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 }
 
     data.objects.admin0.geometries = data.objects.admin0.geometries.filter(function(geometry) {
        var code = geometry.properties.iso_a3
@@ -112,7 +108,7 @@ var Map = React.createClass({
 
     /* Get the GeoJSON from our filtered topoJSON */
 
-    /* this is the original data
+    /* 1 this is the original data
     var projection = d3.geo.mercator()
         .center([10.3, 50])
         .scale(1000)
@@ -124,7 +120,7 @@ var Map = React.createClass({
     var states = topojson.feature(data, data.objects.admin0);
     */
 
-    /* this is the cartogrammed version */
+    /* 2 this is the cartogrammed version */
     var cartogram = d3.cartogram()
       .projection(d3.geo.mercator()
         .center([-15, 55])
@@ -182,7 +178,8 @@ var Map = React.createClass({
         .call(force.drag)
       .append("path")
         .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .attr("d", function(d) { return path(d.feature); });
+        .attr("d", function(d) { return path(d.feature); })
+        .style('fill', 'blue')
 
     force.on("tick", function(e) {
       link.attr("x1", function(d) { return d.source.x; })
@@ -194,6 +191,29 @@ var Map = React.createClass({
         return "translate(" + d.x + "," + d.y + ")";
       })
     });
+
+    /* Legend.
+    See http://eyeseast.github.io/visible-data/2013/08/27/responsive-legends-with-d3/
+     */
+    var colors = d3.scale.quantize()
+    .range(colorbrewer.Greens[7]);
+
+    var legend = d3.select('#legend')
+      .append('ul')
+        .attr('class', 'list-inline');
+
+    var keys = legend.selectAll('li.key')
+        .data(colors.range());
+
+    keys.enter().append('li')
+        .attr('class', 'key')
+        .style('border-top-color', String)
+        .text(function(d) {
+            var r = colors.invertExtent(d);
+            //return formats.percent(r[0]);
+            console.log(r[0])
+            return r[0]
+        });
   }
 });
 
