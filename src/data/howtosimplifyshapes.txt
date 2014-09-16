@@ -1,0 +1,1 @@
+topojson -o lolo.json lala.json --simplify-proportion 0.5 -p
