@@ -132,7 +132,7 @@ var Map = React.createClass({
       )
       .value(function(d) {
         var value = _this.getCountryMeasure('population', d.properties.iso_a3)
-        return value * value
+        return value
       });
 
     var states = cartogram(this.topojsonData, this.topojsonData.objects.admin0.geometries);
