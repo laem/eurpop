@@ -13,7 +13,7 @@ module.exports = function (grunt) {
 
   // Read configuration from package.json
   var pkgConfig = grunt.file.readJSON('package.json');
-  
+
   grunt.initConfig({
     pkg: pkgConfig,
 
@@ -32,7 +32,7 @@ module.exports = function (grunt) {
         publicPath: '/scripts/',
         contentBase: './<%= pkg.src %>/',
       },
-      
+
       start: {
         keepAlive: true,
       }
@@ -108,11 +108,14 @@ module.exports = function (grunt) {
 
   grunt.registerTask('serve', function (target) {
     if (target === 'dist') {
-      return grunt.task.run(['build', 'open:dist', 'connect:dist']);
+      return grunt.task.run(
+        [ 'build',
+          //'open:dist',
+          'connect:dist']);
     }
 
     grunt.task.run([
-      'open:dev',
+      //'open:dev',
       'webpack-dev-server'
     ]);
   });

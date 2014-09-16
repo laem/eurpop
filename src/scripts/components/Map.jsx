@@ -12,7 +12,7 @@ require('../../styles/Map.css');
 
 var topojson = require('../../libs/topojson.v1.min.js')
 require('../../libs/cartogram.js')
-var data = require('json!../../data/lala.json')
+var topojsonData = require('json!../../data/lala.json')
 
 var Dragdealer = require('../../libs/dragdealer.js')
 //Go get data from http://databank.worldbank.org
@@ -32,9 +32,10 @@ var Map = React.createClass({
           <div className="dragdealer" id="timeSlider">
             <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
           </div>
-        {/* <h1>Europe's {this.state.indicator}</h1>*/}
+          <h1>A map of europeans</h1>
           <div ref="playground" style={{display: 'block'}}>
           </div>
+          <h3>Fertility rate</h3>
           <ul id="legend"></ul>
           <button onClick={this.toggle}>Toggle indicator</button>
 
@@ -42,8 +43,30 @@ var Map = React.createClass({
       );
   },
 
-  sliderChange: function(you){
+  prepareData: function(){
+    // Select all european geometries
+    //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
+    //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
 
+    /* Only some of them */
+    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
+    //var area = {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 }
+
+    this.topojsonData = topojsonData
+
+    this.topojsonData.objects.admin0.geometries = topojsonData.objects.admin0.geometries.filter(function(geometry) {
+       var code = geometry.properties.iso_a3
+       return pays.indexOf(code) > -1
+    })
+
+  },
+
+  /* metric should be 'population' or 'fertility' */
+  getCountryMeasure: function(metric, code){
+    var countries = this.props[metric].column(['Country Code']).data
+    var index = countries.indexOf(code)
+    var measure = this.props.population.column([this.state.year]).data[index]
+    return measure
   },
 
   toggle: function(){
@@ -54,6 +77,7 @@ var Map = React.createClass({
   },
 
   componentDidMount: function(){
+    this.prepareData()
     this.componentDidUpdate()
     new Dragdealer('timeSlider',{
       steps: 30,
@@ -66,17 +90,14 @@ var Map = React.createClass({
     this.setState({year: 1960 + Math.round(x * 90)})
   },
 
-  componentDidUpdate: function () { var _this = this
+  componentDidUpdate: function () {
+    var _this = this
 
-    if (!this.props.population || !this.props.fertility){
-      return
-    }
+    if (!this.props.population || !this.props.fertility) return;
 
-
-    console.log('yo')
-
+    console.log('goooooooooo')
     var width = 1800,
-        height = 950;
+        height = 850;
 
     var playground = this.refs.playground.getDOMNode()
     playground.innerHTML = ''
@@ -84,27 +105,6 @@ var Map = React.createClass({
     var svg = d3.select(playground).append("svg")
         .attr("width", width)
         .attr("height", height);
-
-    // Select all european geometries
-    //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
-    //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
-
-    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
-    var area = {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 }
-
-    data.objects.admin0.geometries = data.objects.admin0.geometries.filter(function(geometry) {
-       var code = geometry.properties.iso_a3
-       if (pays.indexOf(code) > -1) {
-
-            var countries = _this.props.population.column(['Country Code']).data
-            var index = countries.indexOf(code)
-            var measure = _this.props.population.column([_this.state.year]).data[index]
-
-            geometry.properties.population = measure
-            //geometry.properties.indicator = facts[_this.state.indicator][code]
-            return true
-         }
-    })
 
 
     /* Get the GeoJSON from our filtered topoJSON */
@@ -118,23 +118,29 @@ var Map = React.createClass({
 
     var path = d3.geo.path().projection(projection)
 
-    var states = topojson.feature(data, data.objects.admin0);
+    var states = topojson.feature(topojson, topojson.objects.admin0);
     */
 
     /* 2 this is the cartogrammed version */
+    var start = new Date().getTime();
+
     var cartogram = d3.cartogram()
       .projection(d3.geo.mercator()
-        .center([-15, 55])
+        .center([-15, 53])
         .scale(1200)
         //.translate([width / 2, height / 2])
       )
       .value(function(d) {
-        return d.properties.population
-        //return 1 - Math.random() / 2;
+        return _this.getCountryMeasure('population', d.properties.iso_a3)
       });
 
-    var states = cartogram(data, data.objects.admin0.geometries);
+    var states = cartogram(this.topojsonData, this.topojsonData.objects.admin0.geometries);
+
     var path = cartogram.path
+
+var end = new Date().getTime();
+console.log('ça a pris : ', end-start)
+
 
     var nodes = [],
         links = [];

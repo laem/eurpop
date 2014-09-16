@@ -17,7 +17,10 @@ line {
 
 #legend {
     padding: 1.5em 0 0 1.5em;
-    width: 30%
+    width: 500px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #legend li.key {
