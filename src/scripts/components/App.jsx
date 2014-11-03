@@ -49,9 +49,7 @@ var App = React.createClass({
   render: function() {
     return (
       <div className='main'>
-        <ReactTransitionGroup transitionName="fade">
           <Visualisation population={this.state.population} fertility={this.state.fertility}/>
-        </ReactTransitionGroup>
       </div>
     );
   }
@@ -60,4 +58,4 @@ var App = React.createClass({
 React.renderComponent(<App />, document.getElementById('content')); // jshint ignore:line
 
 
-module.exports = ForceCartogramApp;
+module.exports = App;
