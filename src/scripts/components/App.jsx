@@ -16,12 +16,12 @@ require('../../styles/main.css');
 var Miso = require("miso.dataset");
 var _ = require("underscore.deferred");
 
-var Map = require('./Map.jsx')
+var Visualisation = require('./Visualisation.jsx')
 
 var imageURL = '../../images/yeoman.png';
 
 
-var ForceCartogramApp = React.createClass({
+var App = React.createClass({
   getInitialState: function(){
     return {ds: null}
   },
@@ -50,14 +50,14 @@ var ForceCartogramApp = React.createClass({
     return (
       <div className='main'>
         <ReactTransitionGroup transitionName="fade">
-          <Map population={this.state.population} fertility={this.state.fertility}/>
+          <Visualisation population={this.state.population} fertility={this.state.fertility}/>
         </ReactTransitionGroup>
       </div>
     );
   }
 });
 
-React.renderComponent(<ForceCartogramApp />, document.getElementById('content')); // jshint ignore:line
+React.renderComponent(<App />, document.getElementById('content')); // jshint ignore:line
 
 
 module.exports = ForceCartogramApp;

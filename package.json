@@ -4,7 +4,7 @@
   "src": "src",
   "test": "test",
   "dist": "dist",
-  "mainInput": "ForceCartogramApp",
+  "mainInput": "App",
   "mainOutput": "main",
   "dependencies": {
     "react": "*"

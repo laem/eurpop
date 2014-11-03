@@ -8,7 +8,7 @@ var React = require('react/addons');
 require('../../libs/d3.v3.min.js')
 var colorbrewer = require('../../libs/colorbrewer.js')
 
-require('../../styles/Map.css');
+require('../../styles/visualisation.css');
 
 var topojson = require('../../libs/topojson.v1.min.js')
 require('../../libs/cartogram.js')
@@ -30,15 +30,26 @@ var Map = React.createClass({
   render: function () {
     return (
         <div className="centered">
-          <div className="dragdealer" id="timeSlider">
-            <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
+          <div id="year">
+            <span>
+              {this.state.year}
+            </span>
           </div>
+
           <h1>A map of europeans</h1>
-          <div ref="playground" style={{display: 'block'}}>
+          <div id="dragContainer">
+            <div className="dragdealer" id="timeSlider">
+              <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
+            </div>
           </div>
-          <h3>Fertility rate</h3>
-          <ul id="legend"></ul>
-          <button onClick={this.toggle}>Toggle indicator</button>
+          <div id="playground" ref="playground" style={{display: 'block'}}>
+          </div>
+          <div className="legendBlock">
+            <h3>Country colors show the <em>fertility rate</em></h3>
+            <ul id="legend"></ul>
+          </div>
+
+
 
         </div>
       );
@@ -68,13 +79,6 @@ var Map = React.createClass({
     var index = countries.indexOf(code)
     var measure = this.props.population.column([this.state.year]).data[index]
     return measure
-  },
-
-  toggle: function(){
-    var newState = this.state.indicator === 'pop' ? 'area' : 'pop'
-    this.setState({
-      indicator: newState
-    })
   },
 
   componentDidMount: function(){

@@ -1,0 +1,96 @@
+path {
+  fill: #000;
+  stroke: black;
+  stroke-width: 1.5px;
+}
+
+line {
+  stroke: #fff;
+  opacity: 0.1
+}
+
+/* Legend */
+
+.legendBlock {
+  color: rgba(255, 255, 255, 0.86);
+  width: 400px;
+  left: 50%;
+  position: relative;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+}
+.legendBlock em {
+  color: white
+}
+
+#legend {
+    padding: 1.5em 0 0 1.5em;
+    width: 500px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#legend li.key {
+    border-top-width: 15px;
+    border-top-style: solid;
+    font-size: 1em;
+    width: 10%;
+    padding-left: 0;
+    padding-right: 0;
+    float: left;
+    line-height: 26px;
+}
+
+/* Dragdealer */
+
+
+.dragdealer {
+  position: relative;
+  height: 60px;
+  background: #191919;
+}
+.dragdealer .handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: pointer;
+}
+.dragdealer .red-bar {
+  width: 100px;
+  height: 60px;
+  background: transparent;
+  color: #fff;
+  font-size: 26px;
+  line-height: 60px;
+  text-align: center;
+  border: 1px solid white;
+}
+.dragdealer .disabled {
+  background: #898989;
+}
+
+#year {
+  opacity: 0.03;
+  position: fixed;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  top:50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translate(-50%, -50%);
+  font-size: 900px;
+
+  /*
+  top:50%;
+  left: 0;
+
+  line-height: 200px;
+  margin-top: -100px;
+  width: 100%;
+  z-index: 0
+  */
+}

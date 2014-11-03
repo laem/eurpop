@@ -4,9 +4,13 @@ html, body {
   background: #222222;
 }
 
+body {
+    font-family:'Fira Sans';
+}
+
 h1 {
-  font-size: 42px;
-  font-weight: 200
+  font-size: 62px;
+  font-weight: 200;
 }
 
 .centered {
@@ -14,6 +18,11 @@ h1 {
 }
 
 /* main */
+
+html, body,
+.main {
+  height:100%
+}
 
 .main {
   width: 100%;
@@ -47,31 +56,4 @@ h1 {
 
 .fade-leave.fade-leave-active {
   opacity: 0.01;
-}
-
-
-
-.dragdealer {
-  position: relative;
-  height: 60px;
-  background: #191919;
-}
-.dragdealer .handle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  cursor: pointer;
-}
-.dragdealer .red-bar {
-  width: 100px;
-  height: 60px;
-  background: transparent;
-  color: #fff;
-  font-size: 26px;
-  line-height: 60px;
-  text-align: center;
-  border: 1px solid white;
-}
-.dragdealer .disabled {
-  background: #898989;
 }
