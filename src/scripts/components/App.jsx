@@ -5,7 +5,6 @@
 'use strict';
 
 var React = require('react/addons');
-var ReactTransitionGroup = React.addons.TransitionGroup;
 
 // Export React so the devtools can find it
 (window !== window.top ? window.top : window).React = React;
@@ -13,13 +12,21 @@ var ReactTransitionGroup = React.addons.TransitionGroup;
 // CSS
 require('../../styles/reset.css');
 require('../../styles/main.css');
+
 var Miso = require("miso.dataset");
 var _ = require("underscore.deferred");
+var spreadsheetKey = '1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ'
+
+function constructMiso(worksheetIndex){
+  return new Miso.Dataset({
+    importer : Miso.Dataset.Importers.GoogleSpreadsheet,
+    parser : Miso.Dataset.Parsers.GoogleSpreadsheet,
+    key : spreadsheetKey,
+    worksheet : worksheetIndex + ''
+  });
+}
 
 var Visualisation = require('./Visualisation.jsx')
-
-var imageURL = '../../images/yeoman.png';
-
 
 var App = React.createClass({
   getInitialState: function(){
@@ -27,20 +34,10 @@ var App = React.createClass({
   },
   componentDidMount: function(){
     var _this = this
-    var spreadsheetKey = '1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ'
-    var populationDs = new Miso.Dataset({
-      importer : Miso.Dataset.Importers.GoogleSpreadsheet,
-      parser : Miso.Dataset.Parsers.GoogleSpreadsheet,
-      key : spreadsheetKey,
-      worksheet : "1"
-    });
 
-    var fertilityDs = new Miso.Dataset({
-      importer : Miso.Dataset.Importers.GoogleSpreadsheet,
-      parser : Miso.Dataset.Parsers.GoogleSpreadsheet,
-      key : spreadsheetKey,
-      worksheet : "2"
-    });
+    /* Using Miso dataset to import data from google spreadsheets */
+    var populationDs = constructMiso(1)
+    var fertilityDs = constructMiso(2)
 
     _.when(populationDs.fetch(), fertilityDs.fetch()).then(function() {
       _this.setState({population: populationDs, fertility: fertilityDs})
@@ -56,6 +53,5 @@ var App = React.createClass({
 });
 
 React.renderComponent(<App />, document.getElementById('content')); // jshint ignore:line
-
 
 module.exports = App;

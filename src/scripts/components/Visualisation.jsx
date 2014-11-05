@@ -13,21 +13,24 @@ require('../../styles/visualisation.css');
 var topojson = require('../../libs/topojson.v1.min.js')
 require('../../libs/cartogram.js')
 
+/* Country shapes, will be used to draw the map */
 var topojsonData = require('json!../../data/lala.json')
 
 var Dragdealer = require('../../libs/dragdealer.js')
-//Go get data from http://databank.worldbank.org
-//Put them in a google spreadsheet
 
-var Map = React.createClass({
+var Visualisation = React.createClass({
   getInitialState: function(){
     return {
       year: 1960,
-      population: null, // datasets
-      fertility: null // datasets
+      focus: null
     }
   },
   render: function () {
+    var message = '',
+        focus = this.state.focus;
+    if (focus != undefined){
+        message = <p>{focus.name} had {focus.population} citizens in {this.state.year}</p>
+    }
     return (
         <div className="centered">
 
@@ -37,9 +40,11 @@ var Map = React.createClass({
               <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
             </div>
           </div>
-          <div id="playground" ref="playground" >
-          </div>
+          <div  id="playground" ref="playground"
+                data-comment="the map or bar chart will be drawn here"
+          ></div>
           <div className="legendBlock">
+            {message}
             <h3>Country colors show the <em>fertility rate</em></h3>
             <ul id="legend"></ul>
           </div>
@@ -72,8 +77,13 @@ var Map = React.createClass({
   getCountryMeasure: function(metric, code){
     var countries = this.props[metric].column(['Country Code']).data
     var index = countries.indexOf(code)
-    var measure = this.props.population.column([this.state.year]).data[index]
-    return measure
+    return this.props.population.column([this.state.year]).data[index]
+  },
+
+  getCountryName: function(code){
+    var countries = this.props['population'].column(['Country Code']).data
+    var index = countries.indexOf(code)
+    return this.props.population.column(['Country Name']).data[index]
   },
 
   componentDidMount: function(){
@@ -99,6 +109,12 @@ var Map = React.createClass({
 
 
     var playground = this.refs.playground.getDOMNode()
+    var drawnYear = playground.dataset.year
+    if (drawnYear == this.state.year){
+      return
+    } else {
+      playground.dataset.year = this.state.year
+    }
 
 
     var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
@@ -237,6 +253,11 @@ var Map = React.createClass({
         .enter().append("g")
           .attr("transform", function(d) { return "translate(" + -d.x + "," + -d.y + ")"; })
           .call(force.drag)
+          .on('mouseover', function(d){
+            var name = _this.getCountryName(d.feature.properties.iso_a3)
+            var population = _this.getCountryMeasure('population', d.feature.properties.iso_a3)
+            _this.setState({focus: {name: name, population: population}})
+          })
         .append("path")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .attr("d", function(d) { return path(d.feature); })
@@ -268,4 +289,4 @@ var Map = React.createClass({
   }
 });
 
-module.exports = Map;
+module.exports = Visualisation;

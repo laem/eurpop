@@ -26,11 +26,20 @@ line {
   transform: translateX(-50%);
 }
 .legendBlock em {
-  color: white
+  color: rgb(157, 157, 157)
+}
+
+.legendBlock p {
+  color: #eee;
+  margin-bottom: 3%
+}
+
+.legendBlock h3 {
+  color: #767676
 }
 
 #legend {
-    padding: 1.5em 0 0 1.5em;
+    padding: 0.5em 0 0 1.5em;
     width: 500px;
     display: block;
     margin-left: auto;
