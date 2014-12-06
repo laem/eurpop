@@ -67,10 +67,8 @@ var Visualisation = React.createClass({
 
   prepareData: function(){
     // Select all 27 european geometries
-    //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
-    //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
-
-    /* Only some of them */
+    //var pays = ["MLT", "AUT", "BEL", "BGR", "HRV", "CYP", "CZE", "DNK", "EST", "FIN", "FRA"]
+    //pays = pays.concat(["DEU", "GRC", "HUN", "IRL", "ITA", "LVA", "LTU", "LUX", "NLD", "POL", "ROM", "SVK", "SVN", "ESP", "SWE", "CHE", "GBR"])
     var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
 
     this.topojsonData = topojsonData
