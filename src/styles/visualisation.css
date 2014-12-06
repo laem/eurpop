@@ -16,6 +16,8 @@ line {
 
 /* Legend */
 
+
+
 .legendBlock {
   color: rgba(255, 255, 255, 0.86);
   width: 400px;
@@ -32,6 +34,11 @@ line {
 .legendBlock p {
   color: #eee;
   margin-bottom: 3%
+}
+
+.legendBlock p.info {
+  color: #767676;
+  font-style: italic
 }
 
 .legendBlock h3 {

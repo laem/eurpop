@@ -12,10 +12,11 @@ require('../../styles/visualisation.css');
 
 var topojson = require('../../libs/topojson.v1.min.js')
 require('../../libs/cartogram.js')
-
 /* Country shapes, will be used to draw the map */
 var topojsonData = require('json!../../data/lala.json')
+var frmttr = require('frmttr')()
 
+/* Used for the time slider */
 var Dragdealer = require('../../libs/dragdealer.js')
 
 var Visualisation = React.createClass({
@@ -26,10 +27,21 @@ var Visualisation = React.createClass({
     }
   },
   render: function () {
-    var message = '',
+    var message = <p className="info">Hover over countries for figures</p>,
         focus = this.state.focus;
-    if (focus != undefined){
-        message = <p>{focus.name} had {focus.population} citizens in {this.state.year}</p>
+    if (focus != null){
+      var name = this.getCountryName(focus)
+      var population = this.getCountryMeasure('population', focus)
+
+      var year = new Date().getFullYear(),
+        verb = this.state.year > year ? 'will have' : 'had',
+        pop = frmttr(population);
+
+      message = <p>
+                  {name} {verb}
+                  <span title={pop.alt}> {pop.regular} </span>
+                  citizens in {this.state.year}
+              </p>
     }
     return (
         <div className="centered">
@@ -45,24 +57,21 @@ var Visualisation = React.createClass({
           ></div>
           <div className="legendBlock">
             {message}
-            <h3>Country colors show the <em>fertility rate</em></h3>
+            <h3>Colors show the <em>fertility rate</em></h3>
             <ul id="legend"></ul>
           </div>
-
-
 
         </div>
       );
   },
 
   prepareData: function(){
-    // Select all european geometries
+    // Select all 27 european geometries
     //var pays = ['AUT', 'BEL', 'BGR', 'CYP', 'CZE', 'DNK', 'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL', 'ITA']
     //pays = pays.concat([ 'LVA', 'LTU', 'LUX', 'MLT', 'NLD', 'POL', 'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR']);
 
     /* Only some of them */
     var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
-    //var area = {'FRA': 547030.0, 'ESP': 504782.0, 'DEU': 357021.0, 'GBR': 244820.0, 'ITA': 301230.0, 'CHE': 41290.0 }
 
     this.topojsonData = topojsonData
 
@@ -70,6 +79,10 @@ var Visualisation = React.createClass({
        var code = geometry.properties.iso_a3
        return pays.indexOf(code) > -1
     })
+
+    /* Cartogram paths will be cached,
+    not avoid recomputing everything for each year change */
+    this.cache = { 1960: null}
 
   },
 
@@ -96,17 +109,14 @@ var Visualisation = React.createClass({
   },
 
   timeChanged: function(x, y){
-    var timeHandle = this.refs.timeHandle.getDOMNode()
     this.setState({year: 1960 + Math.round(x * 90)})
   },
 
   componentDidUpdate: function () {
     var _this = this
 
+    /* Wait for data */
     if (!this.props.population || !this.props.fertility) return;
-
-    console.log('goooooooooo')
-
 
     var playground = this.refs.playground.getDOMNode()
     var drawnYear = playground.dataset.year
@@ -116,36 +126,32 @@ var Visualisation = React.createClass({
       playground.dataset.year = this.state.year
     }
 
-
-    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
-    var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-
-    var width = 1800,
-        height = 850;
+    console.log('goooooooooo')
 
     var w = window,
     d = document,
     e = d.documentElement,
     g = d.getElementsByTagName('body')[0]
 
-
     var svg;
 
-    function updateWindow(){
-        var x = w.innerWidth || e.clientWidth || g.clientWidth;
-        var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-        if (x * y == 0) return;
+    window.onresize = function(){
+      _this.cache = {} // flush the cartogram cache
+      console.log('cache flushed')
+      draw()
+    };
 
-        playground.innerHTML = ''
-        svg = d3.select(playground).append("svg")
-        svg.attr("width", x).attr("height", y - 250);
-        force(x, y)
-    }
+    draw()
 
-    window.onresize = updateWindow;
-    updateWindow()
+    function draw(){
+      var x = w.innerWidth || e.clientWidth || g.clientWidth;
+      var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+      if (x * y == 0) return;
 
-    function force(x, y){
+      playground.innerHTML = ''
+      svg = d3.select(playground).append("svg")
+      svg.attr("width", x).attr("height", y - 250);
+
       /* Get the GeoJSON from our filtered topoJSON */
 
       /* 1 this is the original data
@@ -161,12 +167,17 @@ var Visualisation = React.createClass({
       */
 
       /* 2 this is the cartogrammed version */
-      var start = new Date().getTime();
+      var start = new Date().getTime(), end;
 
 // for scaling, http://stackoverflow.com/questions/14492284/center-a-map-in-d3-given-a-geojson-object
 
-      var cartogram = d3.cartogram()
-        .projection(d3.geo.mercator()
+      var cartogram, states, year = _this.state.year;
+      if (_this.cache[year]){
+        cartogram = _this.cache[year].cartogram
+        states = _this.cache[year].states
+      } else {
+        cartogram = d3.cartogram()
+          .projection(d3.geo.mercator()
           //.center([0, 0])
           .scale(y)
           .translate([0.47 * x, 1.3 * y])
@@ -176,12 +187,15 @@ var Visualisation = React.createClass({
           return value
         });
 
-      var states = cartogram(_this.topojsonData, _this.topojsonData.objects.admin0.geometries);
+        states = cartogram(_this.topojsonData, _this.topojsonData.objects.admin0.geometries);
+
+        _this.cache[year] = {cartogram: cartogram, states: states}
+      }
 
       var path = cartogram.path
 
-  var end = new Date().getTime();
-  console.log('ça a pris : ', end-start)
+      end = new Date().getTime();
+      console.log('ça a pris : 2', end-start)
 
 
       var nodes = [],
@@ -227,7 +241,7 @@ var Visualisation = React.createClass({
 
       /* Force map */
 
-      var force = d3.layout.force().size([width, height]);
+      var force = d3.layout.force().size([x, y]);
 
       force
           .gravity(0)
@@ -254,9 +268,7 @@ var Visualisation = React.createClass({
           .attr("transform", function(d) { return "translate(" + -d.x + "," + -d.y + ")"; })
           .call(force.drag)
           .on('mouseover', function(d){
-            var name = _this.getCountryName(d.feature.properties.iso_a3)
-            var population = _this.getCountryMeasure('population', d.feature.properties.iso_a3)
-            _this.setState({focus: {name: name, population: population}})
+            _this.setState({focus: d.feature.properties.iso_a3})
           })
         .append("path")
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
