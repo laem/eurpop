@@ -27,15 +27,17 @@ var Visualisation = React.createClass({
     }
   },
   render: function () {
+    var year = new Date().getFullYear()
+
     var message = <p className="info">Hover over countries for figures</p>,
         focus = this.state.focus;
     if (focus != null){
       var name = this.getCountryName(focus)
       var population = this.getCountryMeasure('population', focus)
 
-      var year = new Date().getFullYear(),
-        verb = this.state.year > year ? 'will have' : 'had',
-        pop = frmttr(population);
+
+      var verb = this.state.year > year ? 'will have' : 'had',
+          pop = frmttr(population);
 
       message = <p>
                   {name} {verb}
@@ -43,13 +45,14 @@ var Visualisation = React.createClass({
                   citizens in {this.state.year}
               </p>
     }
+    var slideClass = this.state.year > year ? 'handle red-bar estimate' : 'handle red-bar'
     return (
         <div className="centered">
 
           <h1>A map of europeans</h1>
           <div id="dragContainer">
             <div className="dragdealer" id="timeSlider">
-              <div ref="timeHandle" className="handle red-bar">{this.state.year}</div>
+              <div ref="timeHandle" className={slideClass}>{this.state.year}</div>
             </div>
           </div>
           <div  id="playground" ref="playground"
@@ -263,11 +266,20 @@ var Visualisation = React.createClass({
           .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
           .attr("d", function(d) { return path(d.feature); })
           .style('fill', function(d){
-            var code = d.feature.properties.iso_a3
+            var code = d.feature.properties.iso_a3,
+              y = _this.state.year;
 
             var countries = _this.props.fertility.column(['Country Code']).data
             var index = countries.indexOf(code)
-            var measure = _this.props.fertility.column([_this.state.year]).data[index]
+
+            function getMeasure(yyyy){
+              return _this.props.fertility.column([yyyy]).data[index]
+            }
+            var measure = getMeasure(y)
+            while (measure === ".."){ //NaN : estimates can span half decades.
+              y --;
+              measure = getMeasure(y)
+            }
             measure = parseFloat(measure.replace(',', '.'))
 
             return colors(measure)

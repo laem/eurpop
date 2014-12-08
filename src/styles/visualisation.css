@@ -86,7 +86,13 @@ line {
   line-height: 40px;
   text-align: center;
   border: 1px solid white;
+  transition: border 1s;
 }
+
+.dragdealer .estimate {
+  border: 1px dashed white;
+}
+
 .dragdealer .disabled {
   background: #898989;
 }
