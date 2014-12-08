@@ -240,18 +240,6 @@ var Visualisation = React.createClass({
               return  d3.format('.2f')(r[0])
           });
 
-      /* Force map */
-
-      var force = d3.layout.force().size([x, y]);
-
-      force
-          .gravity(0)
-          .linkDistance(20)
-          .nodes(nodes)
-          .links(links)
-          .linkDistance(function(d) { return d.distance; })
-          .start();
-
       var lines = svg.append('g').attr('class', 'lines')
 
       var link = lines.selectAll("line")
@@ -268,7 +256,6 @@ var Visualisation = React.createClass({
           .data(nodes)
         .enter().append("g")
           .attr("transform", function(d) { return "translate(" + -d.x + "," + -d.y + ")"; })
-          .call(force.drag)
           .on('mouseover', function(d){
             _this.setState({focus: d.feature.properties.iso_a3})
           })
@@ -285,18 +272,6 @@ var Visualisation = React.createClass({
 
             return colors(measure)
           })
-
-      force.on("tick", function(e) {
-        link.attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
-
-        node.attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
-        })
-      });
-
     }
 
 
