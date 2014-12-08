@@ -11,12 +11,11 @@ path {
 
 line {
   stroke: #fff;
-  opacity: 0.1
+  opacity: 0.04
 }
 
+
 /* Legend */
-
-
 
 .legendBlock {
   color: rgba(255, 255, 255, 0.86);

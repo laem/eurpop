@@ -6,4 +6,6 @@ Worldbank Health Nutrition and Population Statistics: Population estimates and p
 [Get the data](https://docs.google.com/a/qunb.com/spreadsheets/d/1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ/edit#gid=205837150)
 
 *This is just an experiment*.  
-It has many flaws, for example not showing frontier changes (e.g. the Alsace region).
+It has many flaws, for example including population not part of geographical europe in the areas.
+
+Based on [cartogram.js](http://prag.ma/code/d3-cartogram/), inspired by [Force-Directed States of America](http://bl.ocks.org/mbostock/1073373), using [miso dataset](http://misoproject.com/dataset/).

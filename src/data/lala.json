@@ -35683,7 +35683,7 @@
                 "properties" : { "iso_a3" : "ERI" },
                 "type" : "MultiPolygon"
               },
-              { "arcs" : [ 
+              { "arcs" : [
                     [ [ 379,
                         -20,
                         380,

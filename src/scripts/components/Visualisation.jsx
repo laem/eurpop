@@ -66,10 +66,13 @@ var Visualisation = React.createClass({
   },
 
   prepareData: function(){
-    // Select all 27 european geometries
-    //var pays = ["MLT", "AUT", "BEL", "BGR", "HRV", "CYP", "CZE", "DNK", "EST", "FIN", "FRA"]
-    //pays = pays.concat(["DEU", "GRC", "HUN", "IRL", "ITA", "LVA", "LTU", "LUX", "NLD", "POL", "ROM", "SVK", "SVN", "ESP", "SWE", "CHE", "GBR"])
-    var pays = ['FRA', 'ESP', 'DEU', 'GBR', "ITA", "CHE"]
+    // Select all 28 european geometries (grouped for testing)
+    var pays = ["FRA", "ESP", "GBR", "ITA", "PRT", "CHE", "IRL", "BEL", "LUX"]
+    pays = pays.concat(["NLD", "DEU", "AUT", "HUN", "POL", "CZE", "DNK" ])
+    // Sorry northern countries, the screen's to small for you...
+    //pays = pays.concat(["SWE", "EST", "FIN", "LTU", "LVA"])
+    pays = pays.concat(["GRC", "CYP"]) // no geometry for "MLT" :-(
+    pays = pays.concat(["ROU", "BGR", "HRV", "SVN", "SVK"])
 
     this.topojsonData = topojsonData
 
@@ -178,7 +181,7 @@ var Visualisation = React.createClass({
           .projection(d3.geo.mercator()
           //.center([0, 0])
           .scale(y)
-          .translate([0.47 * x, 1.3 * y])
+          .translate([0.43 * x, 1.35 * y])
         )
         .value(function(d) {
           var value = _this.getCountryMeasure('population', d.properties.iso_a3)
@@ -220,7 +223,7 @@ var Visualisation = React.createClass({
        */
       var colors = d3.scale.quantize()
       .range(colorbrewer.RdYlGn[7])
-      .domain([1, 2.1])
+      .domain([1., 2.1])
 
       var legend = d3.select('#legend')
       legend.selectAll('*').remove()
@@ -243,6 +246,7 @@ var Visualisation = React.createClass({
 
       force
           .gravity(0)
+          .linkDistance(20)
           .nodes(nodes)
           .links(links)
           .linkDistance(function(d) { return d.distance; })
