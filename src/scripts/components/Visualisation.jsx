@@ -11,7 +11,8 @@ var colorbrewer = require('../../libs/colorbrewer.js')
 require('../../styles/visualisation.css');
 
 var topojson = require('../../libs/topojson.v1.min.js')
-require('../../libs/cartogram.js')
+//require('../../libs/cartogram_eurpop.js')
+require('../../libs/effective_cartogram.js')
 /* Country shapes, will be used to draw the map */
 var topojsonData = require('json!../../data/lala.json')
 var frmttr = require('frmttr')()
@@ -33,7 +34,7 @@ var Visualisation = React.createClass({
         focus = this.state.focus;
     if (focus != null){
       var name = this.getCountryName(focus)
-      var population = this.getCountryMeasure('population', focus)
+      var population = this.getCountryMeasure('population', focus, this.state.year)
 
 
       var verb = this.state.year > year ? 'will have' : 'had',
@@ -91,10 +92,10 @@ var Visualisation = React.createClass({
   },
 
   /* metric should be 'population' or 'fertility' */
-  getCountryMeasure: function(metric, code){
+  getCountryMeasure: function(metric, code, year){
     var countries = this.props[metric].column(['Country Code']).data
     var index = countries.indexOf(code)
-    return this.props.population.column([this.state.year]).data[index]
+    return this.props.population.column([year]).data[index]
   },
 
   getCountryName: function(code){
@@ -180,6 +181,7 @@ var Visualisation = React.createClass({
         cartogram = _this.cache[year].cartogram
         states = _this.cache[year].states
       } else {
+
         cartogram = d3.cartogram()
           .projection(d3.geo.mercator()
           //.center([0, 0])
@@ -187,11 +189,13 @@ var Visualisation = React.createClass({
           .translate([0.43 * x, 1.35 * y])
         )
         .value(function(d) {
-          var value = _this.getCountryMeasure('population', d.properties.iso_a3)
+          var value = _this.getCountryMeasure('population', d.properties.iso_a3, year)
           return value
         });
 
-        states = cartogram(_this.topojsonData, _this.topojsonData.objects.admin0.geometries);
+        states = cartogram( _this.topojsonData,
+                            _this.topojsonData.objects.admin0.geometries,
+                            d3.geo.path());
 
         _this.cache[year] = {cartogram: cartogram, states: states}
       }
