@@ -5,11 +5,14 @@
  * the subfolder /webpack-dev-server/ is visited. Visiting the root will not automatically reload.
  */
 
-'use strict';
+ 'use strict';
+ var webpack = require('webpack');
 
-module.exports = {
+ module.exports = {
+
   output: {
-    filename: 'main.js'
+    filename: 'main.js',
+    publicPath: '/assets/'
   },
 
   cache: true,

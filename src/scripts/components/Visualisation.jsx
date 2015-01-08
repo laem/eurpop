@@ -12,7 +12,7 @@ require('../../styles/visualisation.css');
 
 var topojson = require('../../libs/topojson.v1.min.js')
 //require('../../libs/cartogram_eurpop.js')
-require('../../libs/effective_cartogram.js')
+var cartogwam = require('../../libs/effective_cartogram.js')
 /* Country shapes, will be used to draw the map */
 var topojsonData = require('json!../../data/lala.json')
 var frmttr = require('frmttr')()
@@ -182,7 +182,7 @@ var Visualisation = React.createClass({
         states = _this.cache[year].states
       } else {
 
-        cartogram = d3.cartogram()
+        cartogram = cartogwam()
           .projection(d3.geo.mercator()
           //.center([0, 0])
           .scale(y)

@@ -13,8 +13,9 @@ var React = require('react/addons');
 require('../../styles/reset.css');
 require('../../styles/main.css');
 
+//var Miso = require("../../libs/miso.dataset/miso.ds.deps.min.0.4.1.js");
 var Miso = require("miso.dataset");
-var _ = require("underscore.deferred");
+
 var spreadsheetKey = '1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ'
 
 function constructMiso(worksheetIndex){
