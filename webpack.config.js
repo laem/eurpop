@@ -59,5 +59,9 @@
       test: /\.jsx$/,
       loader: 'jsx-loader'
     }]
-  }
+  },
+
+  plugins: [
+    new webpack.NoErrorsPlugin()
+  ]
 };

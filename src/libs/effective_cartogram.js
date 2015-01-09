@@ -29,16 +29,23 @@
 
  require('./d3.v3.min.js')
 
- var Calculateur = require('worker!./worker.js')
+ var Worker = require("worker!./worker");
+ var worker = new Worker;
 
- Calculateur().postMessage('yoyo')
+ console.log('ich bin Charlie')
+ worker.onmessage = function(event) {
+   console.log('toutentrain')
+ }
 
+ worker.postMessage('hello')
+
+ worker.postMessage("b");
 
  function cartogram() {
 
   function carto(topology, geometries, d3_geo_path) {
 
-    //var calc = new Worker('calculateur.js')
+
     //calc.onmessage = function(event) {console.log("tintintin", event)};
     //calc.postMessage({a: 1});
 
