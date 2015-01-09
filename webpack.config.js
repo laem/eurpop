@@ -10,6 +10,13 @@
 
  module.exports = {
 
+   node: {
+     fs: "empty",
+     tls: "empty",
+     net: "empty",
+     //json: "empty"
+   },
+
   output: {
     filename: 'main.js',
     publicPath: '/assets/'

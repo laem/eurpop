@@ -20,6 +20,7 @@
     "style-loader": "~0.8.0",
     "url-loader": "~0.5.5",
     "css-loader": "~0.9.0",
+    "json-loader": "*",
     "karma-script-launcher": "~0.1.0",
     "karma-chrome-launcher": "~0.1.4",
     "karma-firefox-launcher": "~0.1.3",
@@ -36,6 +37,7 @@
     "react-hot-loader": "^0.4.5",
     "worker-loader": "*",
     "dragdealer": "*",
-    "miso.dataset": "*"
+    "miso.dataset": "*",
+    "underscore.deferred": "*"
   }
 }

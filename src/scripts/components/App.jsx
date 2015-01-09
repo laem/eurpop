@@ -13,6 +13,7 @@ var React = require('react/addons');
 require('../../styles/reset.css');
 require('../../styles/main.css');
 
+var _ = require('underscore.deferred')
 //var Miso = require("../../libs/miso.dataset/miso.ds.deps.min.0.4.1.js");
 var Miso = require("miso.dataset");
 
