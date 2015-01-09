@@ -157,9 +157,6 @@
 
     var iterations = 8,
         projection = d3.geo.albers(),
-        properties = function(obj) {
-          return obj.properties || {};
-        },
         value = function(d) {
           return 1;
         };

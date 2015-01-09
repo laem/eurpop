@@ -1,0 +1,11 @@
+{
+  "name": "anonymous",
+  "version": "0.0.1",
+  "dependencies": {
+    "d3": "3",
+    "queue-async": "1",
+    "smash": "0",
+    "topojson": "1",
+    "uglify-js": "2"
+  }
+}
