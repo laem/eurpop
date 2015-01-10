@@ -34,7 +34,7 @@
 
  function cartogram() {
 
-  function carto(topology, geometries) {
+  function carto(topology, geometries, value, anchorSize) {
 
     var dfd = new _.Deferred(); // tada!
     var worker = new Worker;
@@ -48,78 +48,12 @@
 
     worker.postMessage({
       do: 'carto',
-      topology: topology, geometries: geometries
+      topology: topology, geometries: geometries, value: value, anchorSize: anchorSize
     })
 
     return dfd.promise()
 
   }
-
-  var iterations = 8,
-      projection = d3.geo.albers(),
-      properties = function(obj) {
-        return obj.properties || {};
-      },
-      value = function(d) {
-        return 1;
-      };
-
-  // for convenience
-  carto.path = d3.geo.path().projection(null);
-
-  carto.iterations = function(i) {
-    if (arguments.length) {
-      iterations = i;
-      return carto;
-    } else {
-      return iterations;
-    }
-  };
-
-  carto.value = function(v) {
-    if (arguments.length) {
-      value = functor(v);
-      return carto;
-    } else {
-      return value;
-    }
-  };
-
-  carto.projection = function(p) {
-    if (arguments.length) {
-      projection = p;
-      return carto;
-    } else {
-      return projection;
-    }
-  };
-
-  carto.feature = function(topology, geom) {
-    return {
-      type: "Feature",
-      id: geom.id,
-      properties: properties.call(null, geom, topology),
-      geometry: {
-        type: geom.type,
-        coordinates: topojson.object(topology, geom).coordinates
-      }
-    };
-  };
-
-  carto.features = function(topo, geometries) {
-    return geometries.map(function(f) {
-      return carto.feature(topo, f);
-    });
-  };
-
-  carto.properties = function(props) {
-    if (arguments.length) {
-      properties = functor(props);
-      return carto;
-    } else {
-      return properties;
-    }
-  };
 
   return carto;
 };

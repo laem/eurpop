@@ -175,19 +175,20 @@ var Visualisation = React.createClass({
           console.log('YEAR ', year)
 
           var carto = cartogwam()
-            .projection(d3.geo.mercator()
-            //.center([0, 0])
-            .scale(y)
-            .translate([0.43 * x, 1.35 * y])
-          )
-          .value(function(d) {
+
+          var value = function(d) {
             var value = _this.getCountryMeasure('population', d.properties.iso_a3, year)
             return value
-          });
+          };
 
 
-        var yearPromise = carto(_this.topojsonData, _this.topojsonData.objects.admin0.geometries);
-        yearPromises.push(yearPromise)
+          var yearPromise = carto(
+            _this.topojsonData,
+            _this.topojsonData.objects.admin0.geometries,
+            value,
+            {x: x, y: y}
+          );
+          yearPromises.push(yearPromise)
       }
 
       _.when(yearPromises).then(function(a, b, c){

@@ -23,14 +23,25 @@ var transformer = function(tf) {
 onmessage = function(event) {
   debugger;
   if (event.data.do === 'carto'){
-    var topology = event.data.topology, geometries = event.data.geometries, path = event.data.path
+    var topology = event.data.topology,
+        geometries = event.data.geometries,
+        path = event.data.path,
+        value = event.data.value,
+        x = event.data.anchorSize.x,
+        y = event.data.anchorSize.y
 
     // copy it first
     topology = copy(topology);
 
     // objects are projected into screen coordinates
     // project the arcs into screen space
-    var projection = d3f.geo.albers() //TODO temporary
+
+    //TODO temporary
+    var projection = d3f.geo.mercator()
+    //.center([0, 0])
+    .scale(y)
+    .translate([0.43 * x, 1.35 * y])
+
 
     var tf = transformer(topology.transform),x,y,nArcVertices,vI,out1,nArcs=topology.arcs.length,aI=0,
     projectedArcs = new Array(nArcs);
@@ -67,10 +78,7 @@ onmessage = function(event) {
     var values = objects.map(value),
       totalValue = values.reduce(function(a,b){return a + b;});
 
-    // no iterations; just return the features
-    if (iterations <= 0) {
-      return objects;
-    }
+    var iterations = 8;
 
     var i = 0;
     while (i++ < iterations) {
@@ -184,6 +192,7 @@ function cosArctan(dx,dy){
   (1/Math.sqrt(1+(div*div))):
   (-1/Math.sqrt(1+(div*div)));
 }
+
 function sinArctan(dx,dy){
   var div = dx/dy;
   return (dy>0)?
@@ -233,6 +242,6 @@ function reverse(array, n) {
   var t, j = array.length, i = j - n; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
 }
 
-function properties = function(obj) {
+function properties(obj) {
   return obj.properties || {};
 }
