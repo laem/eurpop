@@ -34,7 +34,7 @@
 
  function cartogram() {
 
-  function carto(topology, geometries, anchorSize) {
+  function carto(data) {
 
     var dfd = new _.Deferred(); // tada!
     var worker = new Worker;
@@ -47,7 +47,7 @@
 
     worker.postMessage({
       do: 'carto',
-      topology: topology, geometries: geometries, anchorSize: anchorSize
+      data: data
     })
 
     return dfd.promise()

@@ -52,7 +52,7 @@ var Visualisation = React.createClass({
     return (
         <div className="centered">
 
-          <h1>A map of europeans</h1>
+          <h1>Hello !!</h1>
           <div id="dragContainer">
             <div className="dragdealer" id="timeSlider">
               <div ref="timeHandle" className={slideClass}>{this.state.year}</div>
@@ -87,8 +87,7 @@ var Visualisation = React.createClass({
        return pays.indexOf(code) > -1
     })
 
-    /* Cartogram paths will be cached,
-    not avoid recomputing everything for each year change */
+    /* Cartogram paths will be computed in a web worker once */
     this.cache = { 1960: null}
 
   },
@@ -161,17 +160,20 @@ var Visualisation = React.createClass({
 
 
       /* this is the cartogrammed version */
-      var start = new Date().getTime(), end;
+      console.time('processing')
 
 // for scaling, http://stackoverflow.com/questions/14492284/center-a-map-in-d3-given-a-geojson-object
 
-      var states, year = _this.state.year, yearPromises = [];
+      var states, year = _this.state.year
 
       //Pre-compute every year.
       //This, without web workers, will freeze the browser for 10 seconds or more...
 
+      if (_this.cache[1960] == null) computePaths()
 
-      for (var year = 1960; year < 1962; year++){
+      function computePaths(){
+        var yearPromises = [];
+        for (var year = 1960; year < 1962; year++){
           console.log('YEAR ', year)
 
           var carto = cartogwam()
@@ -181,24 +183,37 @@ var Visualisation = React.createClass({
             return value
           };
 
-          var yearPromise = carto(
-            _this.topojsonData,
-            _this.topojsonData.objects.admin0.geometries,
-            //value,
-            {x: x, y: y}
-          );
+          var yearPromise = carto({
+            topology: _this.topojsonData,
+            geometries: _this.topojsonData.objects.admin0.geometries,
+            anchorSize: {x: x, y: y},
+            year: year
+          });
+
           yearPromises.push(yearPromise)
+        }
+
+        _.when(yearPromises).then(function(a, b, c){
+
+          //TODO Retrieve promise result, cartogram
+          yearPromises.forEach(function(promise){
+            _this.cache[promise.year] = {features: promise.features, arcs: promise.arcs}
+          })
+          console.timeEnd('processing')
+
+          drawCartogram()
+        }).fail(function( err ){
+          console.log(err.message); // "Oops!"
+        });
       }
 
-      _.when(yearPromises).then(function(a, b, c){
-
-        //TODO Retrieve promise result, cartogram
+      function drawCartogram(){
 debugger;
-        var path = cartogram.path
+        var states = _this.cache[_this.state.year]
 
-        end = new Date().getTime();
-        console.log('ça a pris : 2', end-start)
-
+        // path with identity projection
+        var path = d3.geo.path()
+        .projection(null);
 
         var nodes = [],
         links = [];
@@ -282,18 +297,11 @@ debugger;
 
           return colors(measure)
         })
+      }
 
-      }, function(a, b, c){
-        debugger;
-      });
-
-
-
-
+      }
     }
 
-
-  }
 });
 
 module.exports = Visualisation;

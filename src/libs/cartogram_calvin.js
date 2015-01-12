@@ -71,7 +71,7 @@ function babylonian(n){
               i1++;
             }
             projectedArcs[i2++]=out1;
-            
+
           }
 
       // path with identity projection
@@ -152,15 +152,15 @@ function babylonian(n){
                     : mass *
                       (distSquared / rSquared) *
                       (4 - 3 * dist / radius);
-              
+
                 delta[0]+=(Fij * cosArctan(dy,dx));
                 delta[1]+=(Fij * sinArctan(dy,dx));
-              
+
               i3++;
             }
 
             // using Fij and angles, calculate vector sum
-            
+
 
             projectedArcs[i2][i1][0] += (delta[0]*forceReductionFactor);
             projectedArcs[i2][i1][1] += (delta[1]*forceReductionFactor);
@@ -291,7 +291,7 @@ function cosArctan(dx,dy){
        }else{
            return (-1/Math.sqrt(1+(div*div)));
        }
-       
+
    };
 function sinArctan(dx,dy){
        var div = dx/dy;
@@ -328,7 +328,7 @@ function sinArctan(dx,dy){
   }
   function copyObject(o) {
     var obj = {};
-    for (var k in o) 
+    for (var k in o)
     if (o[k] instanceof Array){
             obj[k] = copyArray(o[k]);
         }else if(typeof o[k] === "string" || typeof o[k] === "number"){

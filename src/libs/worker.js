@@ -22,12 +22,15 @@ var transformer = function(tf) {
 
 onmessage = function(event) {
   if (event.data.do === 'carto'){
-    var topology = event.data.topology,
-        geometries = event.data.geometries,
-        path = event.data.path,
-        value = event.data.value,
-        x = event.data.anchorSize.x,
-        y = event.data.anchorSize.y
+    var data = event.data.data
+    var topology = data.topology,
+        geometries = data.geometries,
+        path = data.path,
+        value = data.value,
+        x = data.anchorSize.x,
+        y = data.anchorSize.y,
+        year = data.year;
+
 
     // copy it first
     topology = copy(topology);
@@ -169,7 +172,8 @@ onmessage = function(event) {
     self.postMessage({
       done: 'processing',
       features: objects,
-      arcs: projectedArcs
+      arcs: projectedArcs,
+      year: year
     })
   }
 }
