@@ -27,7 +27,7 @@
  * });
  */
 
- require('./d3.v3.min.js')
+ require('./d3.js')
 
  var Worker = require("worker!./worker");
  var _ = require('underscore.deferred')

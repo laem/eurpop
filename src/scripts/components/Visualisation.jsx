@@ -5,7 +5,7 @@
 'use strict';
 
 var React = require('react/addons');
-require('../../libs/d3.v3.min.js')
+require('../../libs/d3.js')
 var _ = require('underscore.deferred')
 
 var colorbrewer = require('../../libs/colorbrewer.js')
@@ -88,7 +88,7 @@ var Visualisation = React.createClass({
     })
 
     /* Cartogram paths will be computed in a web worker once */
-    this.cache = { 1960: null}
+    this.cache = {1960: null}
 
   },
 
@@ -208,7 +208,7 @@ var Visualisation = React.createClass({
       }
 
       function drawCartogram(){
-debugger;
+
         var states = _this.cache[_this.state.year]
 
         // path with identity projection
@@ -219,6 +219,7 @@ debugger;
         links = [];
 
         states.features.forEach(function(d, i) {
+          debugger;
           var centroid = path.centroid(d);
           if (centroid.some(isNaN)) return;
           centroid.x = centroid[0];

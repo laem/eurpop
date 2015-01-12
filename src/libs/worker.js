@@ -79,7 +79,7 @@ onmessage = function(event) {
 
     //TODO temporary
     value = function(){
-      return 100 + Math.random() * 10
+      return 1000000 * (10 + 4 * Math.random())
     }
 
     var values = objects.map(value),
