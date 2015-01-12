@@ -1,7 +1,9 @@
 LIBRARY_FILES = \
     node_modules/d3/src/start.js \
     node_modules/d3/src/geo/path.js \
-    node_modules/d3/src/end.js
+		node_modules/d3/src/geo/geo.js \
+		node_modules/d3/src/geo/mercator.js \
+		node_modules/d3/src/end.js
 
 
 

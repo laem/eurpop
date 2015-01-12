@@ -34,21 +34,20 @@
 
  function cartogram() {
 
-  function carto(topology, geometries, value, anchorSize) {
+  function carto(topology, geometries, anchorSize) {
 
     var dfd = new _.Deferred(); // tada!
     var worker = new Worker;
 
     worker.onmessage = function(event){
-      debugger;
-      if (event.done === 'processing'){
-        dfd.resolveWith(event.data)
+      if (event.data.done === 'processing'){
+        dfd.resolve(event.data)
       }
     }
 
     worker.postMessage({
       do: 'carto',
-      topology: topology, geometries: geometries, value: value, anchorSize: anchorSize
+      topology: topology, geometries: geometries, anchorSize: anchorSize
     })
 
     return dfd.promise()

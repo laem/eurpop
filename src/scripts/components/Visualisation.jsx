@@ -181,11 +181,10 @@ var Visualisation = React.createClass({
             return value
           };
 
-
           var yearPromise = carto(
             _this.topojsonData,
             _this.topojsonData.objects.admin0.geometries,
-            value,
+            //value,
             {x: x, y: y}
           );
           yearPromises.push(yearPromise)

@@ -2366,6 +2366,51 @@ function d3f_geo_pathProjectStream(project) {
   var resample = d3f_geo_resample(function(x, y) { return project([x * d3f_degrees, y * d3f_degrees]); });
   return function(stream) { return d3f_geo_projectionRadians(resample(stream)); };
 }
+
+function d3f_geo_mercator(λ, φ) {
+  return [λ, Math.log(Math.tan(π / 4 + φ / 2))];
+}
+
+d3f_geo_mercator.invert = function(x, y) {
+  return [x, 2 * Math.atan(Math.exp(y)) - halfπ];
+};
+
+function d3f_geo_mercatorProjection(project) {
+  var m = d3f_geo_projection(project),
+      scale = m.scale,
+      translate = m.translate,
+      clipExtent = m.clipExtent,
+      clipAuto;
+
+  m.scale = function() {
+    var v = scale.apply(m, arguments);
+    return v === m ? (clipAuto ? m.clipExtent(null) : m) : v;
+  };
+
+  m.translate = function() {
+    var v = translate.apply(m, arguments);
+    return v === m ? (clipAuto ? m.clipExtent(null) : m) : v;
+  };
+
+  m.clipExtent = function(_) {
+    var v = clipExtent.apply(m, arguments);
+    if (v === m) {
+      if (clipAuto = _ == null) {
+        var k = π * scale(), t = translate();
+        clipExtent([[t[0] - k, t[1] - k], [t[0] + k, t[1] + k]]);
+      }
+    } else if (clipAuto) {
+      v = null;
+    }
+    return v;
+  };
+
+  return m.clipExtent(null);
+}
+
+(d3f.geo.mercator = function() {
+  return d3f_geo_mercatorProjection(d3f_geo_mercator);
+}).raw = d3f_geo_mercator;
   if (typeof define === "function" && define.amd) define(d3f);
   else if (typeof module === "object" && module.exports) module.exports = d3f;
   this.d3f = d3f;

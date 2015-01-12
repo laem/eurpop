@@ -1,7 +1,7 @@
 
-debugger;
-require('./d3f.js')
-debugger;
+//Use a partial d3 build
+//https://github.com/mbostock/smash/wiki
+require('./d3.geo/d3f.js')
 
 var transformer = function(tf) {
   var kx = tf.scale[0],
@@ -21,7 +21,6 @@ var transformer = function(tf) {
 };
 
 onmessage = function(event) {
-  debugger;
   if (event.data.do === 'carto'){
     var topology = event.data.topology,
         geometries = event.data.geometries,
@@ -74,6 +73,11 @@ onmessage = function(event) {
         geometry: geom
       };
     });
+
+    //TODO temporary
+    value = function(){
+      return 100 + Math.random() * 10
+    }
 
     var values = objects.map(value),
       totalValue = values.reduce(function(a,b){return a + b;});
@@ -164,10 +168,8 @@ onmessage = function(event) {
 
     self.postMessage({
       done: 'processing',
-      data: {
-        features: objects,
-        arcs: projectedArcs
-      }
+      features: objects,
+      arcs: projectedArcs
     })
   }
 }
