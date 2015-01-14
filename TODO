@@ -23,9 +23,9 @@ Finalisation :
 Core
 ----
 
-Compute the first
-Use the timeline as a loader (20 done out of 100)
-Arrow on button appearing when ready, year background. 
 Pool workers
 https://github.com/Ezelia/WorkerPool/tree/master/src
+Compute the first
+Use the timeline as a loader (20 done out of 100)
+Arrow on button appearing when ready, year background.
 Implement webpack loader ?

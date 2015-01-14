@@ -21,15 +21,16 @@ var transformer = function(tf) {
 };
 
 onmessage = function(event) {
+
   if (event.data.do === 'carto'){
-    var data = event.data.data
-    var topology = data.topology,
-        geometries = data.geometries,
-        path = data.path,
-        x = data.anchorSize.x,
-        y = data.anchorSize.y,
-        year = data.year,
-        values = data.values;
+    var geo = event.data.geo;
+    var topology = geo.topology,
+        geometries = geo.geometries,
+        path = geo.path,
+        x = geo.anchorSize.x,
+        y = geo.anchorSize.y,
+        values = event.data.values,
+        task = event.data.task;
 
 
     // copy it first
@@ -173,10 +174,8 @@ onmessage = function(event) {
       done: 'processing',
       features: objects,
       arcs: projectedArcs,
-      year: year
+      task: task
     })
-
-    close()
   }
 }
 

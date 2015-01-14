@@ -14,7 +14,7 @@ require('../../styles/visualisation.css');
 
 var topojson = require('../../libs/topojson.v1.min.js')
 //require('../../libs/cartogram_eurpop.js')
-var cartogwam = require('../../libs/effective_cartogram.js')
+var cartogwam = require('../../libs/cartogwam.js')
 /* Country shapes, will be used to draw the map */
 var topojsonData = require('json!../../data/lala.json')
 var frmttr = require('frmttr')()
@@ -39,7 +39,7 @@ var Visualisation = React.createClass({
       var population = this.getCountryMeasure('population', focus, this.state.year)
 
 
-      var verb = this.state.year > year ? 'will have' : 'had',
+      var verb = this.state.year > year ? 'could have' : 'had',
           pop = frmttr(population);
 
       message = <p>
@@ -52,10 +52,11 @@ var Visualisation = React.createClass({
     return (
         <div className="centered">
 
-          <h1>Hello !!</h1>
+          <h1>A map of europeans</h1>
+          <div id="chosenYear">{this.state.year}</div>
           <div id="dragContainer">
             <div className="dragdealer" id="timeSlider">
-              <div ref="timeHandle" className={slideClass}>{this.state.year}</div>
+              <div ref="timeHandle" className={slideClass}>-></div>
             </div>
           </div>
           <div  id="playground" ref="playground"
@@ -100,7 +101,7 @@ var Visualisation = React.createClass({
   },
 
   // Get an object of countryId: metric pairs for a given metric and year
-  getValues: function(metric, year){
+  getValuesForYear: function(metric, year){
     var countries = this.props[metric].column(['Country Code']).data
     var data = this.props.population.column([year]).data
     //zip these two collections
@@ -180,32 +181,23 @@ var Visualisation = React.createClass({
         else drawCartogram()
 
       function computePaths(){
-        var yearPromises = [];
-        for (var year = 1960; year < 2000; year++){
 
-          var carto = cartogwam()
-          var values = _this.getValues('population', year)
-
-          var yearPromise = carto({
-            topology: _this.topojsonData,
-            geometries: _this.topojsonData.objects.admin0.geometries,
-            anchorSize: {x: x, y: y},
-            year: year,
-            values: values
-          });
-
-          yearPromises.push(yearPromise)
+        var values = {}
+        //for each year
+        for (var year = 1960; year <= 1962; year++){
+          //map of featureId -> area
+          values[year] = _this.getValuesForYear('population', year)
         }
 
-        _.when(yearPromises).then(function(a, b, c){
+        var promiseOfGeos = cartogwam({
+          topology: _this.topojsonData,
+          geometries: _this.topojsonData.objects.admin0.geometries,
+          anchorSize: {x: x, y: y}
+        }, values);
 
-          //TODO Retrieve promise result, cartogram
-          yearPromises.forEach(function(promise){
-            //unfortunately, proto is lost by web worker postMessage's strings
-            _this.cache[promise.year] = {features: promise.features, arcs: promise.arcs}
-          })
+        promiseOfGeos.then(function(a){
+          _this.cache = a
           console.timeEnd('processing')
-
           drawCartogram()
         }).fail(function( err ){
           console.log(err.message); // "Oops!"
