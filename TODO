@@ -14,18 +14,11 @@ Button to show the real map
 Don't like maps ? Bars
 
 
-Finalisation :
-------------------------------------------
-
-(Blinking ?) Arrow to show what to do
-
-
 Core
 ----
 
-Pool workers
-https://github.com/Ezelia/WorkerPool/tree/master/src
 Compute the first
 Use the timeline as a loader (20 done out of 100)
-Arrow on button appearing when ready, year background.
-Implement webpack loader ?
+Arrow on button appearing when ready.
+
+(Blinking ?) Arrow to show what to do

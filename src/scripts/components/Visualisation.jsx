@@ -49,14 +49,16 @@ var Visualisation = React.createClass({
               </p>
     }
     var slideClass = this.state.year > year ? 'handle red-bar estimate' : 'handle red-bar'
+    var handleClass = this.state.year > year ? 'fa fa-angle-double-right ' : 'fa fa-long-arrow-right'
     return (
         <div className="centered">
 
-          <h1>A map of europeans</h1>
-          <div id="chosenYear">{this.state.year}</div>
+          <h1 id="title">A map of europeans in  <span id="chosenYear">{this.state.year}</span></h1>
           <div id="dragContainer">
             <div className="dragdealer" id="timeSlider">
-              <div ref="timeHandle" className={slideClass}>-></div>
+              <div ref="timeHandle" className={slideClass}>
+                <i className={handleClass}></i>
+              </div>
             </div>
           </div>
           <div  id="playground" ref="playground"
@@ -184,7 +186,7 @@ var Visualisation = React.createClass({
 
         var values = {}
         //for each year
-        for (var year = 1960; year <= 1962; year++){
+        for (var year = 1960; year <= 2030; year++){
           //map of featureId -> area
           values[year] = _this.getValuesForYear('population', year)
         }
