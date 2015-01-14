@@ -99,6 +99,18 @@ var Visualisation = React.createClass({
     return this.props.population.column([year]).data[index]
   },
 
+  // Get an object of countryId: metric pairs for a given metric and year
+  getValues: function(metric, year){
+    var countries = this.props[metric].column(['Country Code']).data
+    var data = this.props.population.column([year]).data
+    //zip these two collections
+    var result = {}
+    countries.forEach(function(c, i){
+      result[c] = data[i]
+    })
+    return result
+  },
+
   getCountryName: function(code){
     var countries = this.props['population'].column(['Country Code']).data
     var index = countries.indexOf(code)
@@ -177,17 +189,14 @@ var Visualisation = React.createClass({
           console.log('YEAR ', year)
 
           var carto = cartogwam()
-
-          var value = function(d) {
-            var value = _this.getCountryMeasure('population', d.properties.iso_a3, year)
-            return value
-          };
+          var values = _this.getValues('population', 1960)
 
           var yearPromise = carto({
             topology: _this.topojsonData,
             geometries: _this.topojsonData.objects.admin0.geometries,
             anchorSize: {x: x, y: y},
-            year: year
+            year: year,
+            values: values
           });
 
           yearPromises.push(yearPromise)
@@ -197,6 +206,8 @@ var Visualisation = React.createClass({
 
           //TODO Retrieve promise result, cartogram
           yearPromises.forEach(function(promise){
+            //unfortunately, proto is lost by web worker postMessage's strings
+
             _this.cache[promise.year] = {features: promise.features, arcs: promise.arcs}
           })
           console.timeEnd('processing')
@@ -219,9 +230,14 @@ var Visualisation = React.createClass({
         links = [];
 
         states.features.forEach(function(d, i) {
-          debugger;
+          //debugger;
+          d.geometry.type = "Polygon"
           var centroid = path.centroid(d);
-          if (centroid.some(isNaN)) return;
+          if (centroid.some(isNaN)) {
+            //debugger;
+            var centroid = path.centroid(d);
+            console.log('no centroid: ', d);return;
+          }
           centroid.x = centroid[0];
           centroid.y = centroid[1];
           centroid.feature = d;

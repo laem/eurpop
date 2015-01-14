@@ -26,10 +26,10 @@ onmessage = function(event) {
     var topology = data.topology,
         geometries = data.geometries,
         path = data.path,
-        value = data.value,
         x = data.anchorSize.x,
         y = data.anchorSize.y,
-        year = data.year;
+        year = data.year,
+        values = data.values;
 
 
     // copy it first
@@ -78,8 +78,8 @@ onmessage = function(event) {
     });
 
     //TODO temporary
-    value = function(){
-      return 1000000 * (10 + 4 * Math.random())
+    value = function(d){
+      return values[d.properties.iso_a3]
     }
 
     var values = objects.map(value),
