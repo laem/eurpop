@@ -182,11 +182,11 @@ var Visualisation = React.createClass({
       //This, without web workers, will freeze the browser for 10 seconds or more...
 
       if (_this.cache[1960] == null) computePaths()
+        else drawCartogram()
 
       function computePaths(){
         var yearPromises = [];
-        for (var year = 1960; year < 1962; year++){
-          console.log('YEAR ', year)
+        for (var year = 1960; year < 1985; year++){
 
           var carto = cartogwam()
           var values = _this.getValues('population', 1960)
@@ -230,13 +230,9 @@ var Visualisation = React.createClass({
         links = [];
 
         states.features.forEach(function(d, i) {
-          //debugger;
-          d.geometry.type = "Polygon"
           var centroid = path.centroid(d);
           if (centroid.some(isNaN)) {
-            //debugger;
-            var centroid = path.centroid(d);
-            console.log('no centroid: ', d);return;
+            return;
           }
           centroid.x = centroid[0];
           centroid.y = centroid[1];

@@ -229,6 +229,8 @@ function object(arcs, o) {
     o = Object.create(o);
     o.properties = o.properties;
     o.coordinates = geometryType[o.type](o.arcs);
+    //type is in o's prototype, which will be lost by worker.postMessage
+    o.type = o.type
     return o;
   }
   var geometryType = {

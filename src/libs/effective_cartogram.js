@@ -41,6 +41,7 @@
 
     worker.onmessage = function(event){
       if (event.data.done === 'processing'){
+        console.log(event.data.year)
         dfd.resolve(event.data)
       }
     }
