@@ -1,5 +1,7 @@
 TODO
 
+Remarques de Julien.
+
 Show 2014 / the futur in another color ?
 
 Text on the right to explain, media queries below :
@@ -16,3 +18,14 @@ Finalisation :
 ------------------------------------------
 
 (Blinking ?) Arrow to show what to do
+
+
+Core
+----
+
+Compute the first
+Use the timeline as a loader (20 done out of 100)
+Arrow on button appearing when ready, year background. 
+Pool workers
+https://github.com/Ezelia/WorkerPool/tree/master/src
+Implement webpack loader ?

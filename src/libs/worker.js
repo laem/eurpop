@@ -175,6 +175,8 @@ onmessage = function(event) {
       arcs: projectedArcs,
       year: year
     })
+
+    close()
   }
 }
 
