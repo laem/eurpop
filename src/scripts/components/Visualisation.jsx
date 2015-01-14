@@ -166,11 +166,6 @@ var Visualisation = React.createClass({
       var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
       if (x * y == 0) return;
 
-      playground.innerHTML = ''
-      svg = d3.select(playground).append("svg")
-      svg.attr("width", x).attr("height", y - 250);
-
-
       /* this is the cartogrammed version */
       console.time('processing')
 
@@ -186,10 +181,10 @@ var Visualisation = React.createClass({
 
       function computePaths(){
         var yearPromises = [];
-        for (var year = 1960; year < 1985; year++){
+        for (var year = 1960; year < 2000; year++){
 
           var carto = cartogwam()
-          var values = _this.getValues('population', 1960)
+          var values = _this.getValues('population', year)
 
           var yearPromise = carto({
             topology: _this.topojsonData,
@@ -207,7 +202,6 @@ var Visualisation = React.createClass({
           //TODO Retrieve promise result, cartogram
           yearPromises.forEach(function(promise){
             //unfortunately, proto is lost by web worker postMessage's strings
-
             _this.cache[promise.year] = {features: promise.features, arcs: promise.arcs}
           })
           console.timeEnd('processing')
@@ -220,6 +214,9 @@ var Visualisation = React.createClass({
 
       function drawCartogram(){
 
+        playground.innerHTML = ''
+        svg = d3.select(playground).append("svg")
+        svg.attr("width", x).attr("height", y - 250);
         var states = _this.cache[_this.state.year]
 
         // path with identity projection
