@@ -22,17 +22,23 @@ var frmttr = require('frmttr')()
 /* Used for the time slider */
 var Dragdealer = require('../../libs/dragdealer.js')
 
+var from = 1960,
+    to = 2030,
+    span = to - from + 1;
+
+
 var Visualisation = React.createClass({
   getInitialState: function(){
     return {
-      year: 1960,
-      focus: null
+      year: from,
+      focus: null,
+      processed: false
     }
   },
   render: function () {
     var year = new Date().getFullYear()
 
-    var message = <p className="info">Hover over countries for figures</p>,
+    var message = <p className="info">(Hover over a country to track its population)</p>,
         focus = this.state.focus;
     if (focus != null){
       var name = this.getCountryName(focus)
@@ -49,7 +55,13 @@ var Visualisation = React.createClass({
               </p>
     }
     var slideClass = this.state.year > year ? 'handle red-bar estimate' : 'handle red-bar'
-    var handleClass = this.state.year > year ? 'fa fa-angle-double-right ' : 'fa fa-long-arrow-right'
+    var handleClass =
+      this.state.processed  ?
+        (this.state.year > year ? 'fa fa-angle-double-right ' : 'fa fa-long-arrow-right')
+                            :
+        'fa fa fa-cog fa-spin';
+
+
     return (
         <div className="centered">
 
@@ -66,7 +78,7 @@ var Visualisation = React.createClass({
           ></div>
           <div className="legendBlock">
             {message}
-            <h3>Colors show the <em>fertility rate</em></h3>
+            <h3><em>Fertility rate</em></h3>
             <ul id="legend"></ul>
           </div>
 
@@ -89,9 +101,6 @@ var Visualisation = React.createClass({
        var code = geometry.properties.iso_a3
        return pays.indexOf(code) > -1
     })
-
-    /* Cartogram paths will be computed in a web worker once */
-    this.cache = {1960: null}
 
   },
 
@@ -123,14 +132,15 @@ var Visualisation = React.createClass({
   componentDidMount: function(){
     this.prepareData()
     this.componentDidUpdate()
-    new Dragdealer('timeSlider',{
+    this.dragdealer = new Dragdealer('timeSlider',{
       steps: 30,
-      animationCallback: this.timeChanged
+      animationCallback: this.timeChanged,
+      disabled: true
     });
   },
 
   timeChanged: function(x, y){
-    this.setState({year: 1960 + Math.round(x * 90)})
+    this.setState({year: from + Math.round(x * (span - 1))})
   },
 
   componentDidUpdate: function () {
@@ -147,8 +157,6 @@ var Visualisation = React.createClass({
       playground.dataset.year = this.state.year
     }
 
-    console.log('goooooooooo')
-
     var w = window,
     d = document,
     e = d.documentElement,
@@ -158,35 +166,38 @@ var Visualisation = React.createClass({
 
     window.onresize = function(){
       _this.cache = {} // flush the cartogram cache
-      console.log('cache flushed')
       draw()
     };
 
     draw()
 
     function draw(){
+      // for scaling, http://stackoverflow.com/questions/14492284/center-a-map-in-d3-given-a-geojson-object
       var x = w.innerWidth || e.clientWidth || g.clientWidth;
       var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
       if (x * y == 0) return;
 
-      /* this is the cartogrammed version */
-      console.time('processing')
+      var states, year = _this.state.year;
 
-// for scaling, http://stackoverflow.com/questions/14492284/center-a-map-in-d3-given-a-geojson-object
+      //Pre-compute the map for every year.
+      //Web workers will prevent the browser from freezing
+      if (_this.cache == null) {
+        //Compute the first year
+        computePaths(from, from)
+        //DIsable the slider
+        _this.dragdealer.disable()
+        //Compute the other years, then enable the slider (enableDragdealer == true)
+        computePaths(from, to, true)
+      } else { //The cache exists, just draw
+        drawCartogram()
+      }
 
-      var states, year = _this.state.year
-
-      //Pre-compute every year.
-      //This, without web workers, will freeze the browser for 10 seconds or more...
-
-      if (_this.cache[1960] == null) computePaths()
-        else drawCartogram()
-
-      function computePaths(){
+      function computePaths(f, t, enableDragdealer){
+        console.time('processing')
 
         var values = {}
         //for each year
-        for (var year = 1960; year <= 2030; year++){
+        for (var year = f; year <= t; year++){
           //map of featureId -> area
           values[year] = _this.getValuesForYear('population', year)
         }
@@ -197,17 +208,26 @@ var Visualisation = React.createClass({
           anchorSize: {x: x, y: y}
         }, values);
 
+        promiseOfGeos.progress(function(value){
+          document.querySelector('#timeSlider').style.width = Math.round(value * 100) + "%"
+        })
+
         promiseOfGeos.then(function(a){
           _this.cache = a
           console.timeEnd('processing')
           drawCartogram()
+          if (enableDragdealer){
+            _this.setState({processed: true})
+            document.querySelector('#timeSlider').style.width = "100%"
+            _this.dragdealer.enable()
+
+          }
         }).fail(function( err ){
           console.log(err.message); // "Oops!"
         });
       }
 
       function drawCartogram(){
-
         playground.innerHTML = ''
         svg = d3.select(playground).append("svg")
         svg.attr("width", x).attr("height", y - 250);

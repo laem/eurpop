@@ -43,6 +43,7 @@
    var workers = [],
     results = {};
 
+
    while (workers.length < 9 && tasks.length > 0){
 
      var worker = new Worker
@@ -56,6 +57,7 @@
 
      worker.onmessage = function(event){
        if (event.data.done === 'processing'){
+         dfd.notify(Object.keys(results).length / n)
          results[event.data.task] = event.data
 
          //the end

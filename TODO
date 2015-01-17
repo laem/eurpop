@@ -2,6 +2,14 @@ TODO
 
 Remarques de Julien.
 
+- Hover countries for figures : Gênant qu'il disparaisse ensuite. Le message est-il vraiment nécessaire ?
+- Colors show fertility rate : pourquoi pas juste un label Fertility rate ?
+- Ajouter un label pour expliquer que la déformation de la taille des pays est proportionnelle à la population ?
+- Titre général : je le trouve pas assez précis. Pourquoi pas European population and fertility
+- Peut être un autre label "Slide to change year" sur le slide, sinon faire en sorte qu'il ressemble plus à un bouton.
+- Peut être aussi mettre une partie du "trail" en pointillés pour souligner encore plus la projection.
+
+
 Show 2014 / the futur in another color ?
 
 Text on the right to explain, media queries below :

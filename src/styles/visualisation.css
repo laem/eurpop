@@ -11,7 +11,7 @@ path {
 
 line {
   stroke: #fff;
-  opacity: 0.04
+  opacity: 0.14
 }
 
 #chosenYear {
@@ -43,7 +43,8 @@ line {
 
 .legendBlock p.info {
   color: #767676;
-  font-style: italic
+  font-style: italic;
+  font-size: 12px
 }
 
 .legendBlock h3 {
@@ -105,5 +106,9 @@ line {
 }
 
 .dragdealer .disabled {
-  background: #898989;
+  border: none
+}
+.dragdealer .disabled i {
+  font-size: 28px;
+  padding: 8px
 }
