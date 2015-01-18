@@ -65,7 +65,7 @@ var Visualisation = React.createClass({
     return (
         <div className="centered">
 
-          <h1 id="title">A map of europeans in  <span id="chosenYear">{this.state.year}</span></h1>
+          <h1 id="title">A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
           <div id="dragContainer">
             <div className="dragdealer" id="timeSlider">
               <div ref="timeHandle" className={slideClass}>
@@ -178,10 +178,10 @@ var Visualisation = React.createClass({
       if (x * y == 0) return;
 
       var states, year = _this.state.year;
-
+debugger;
       //Pre-compute the map for every year.
       //Web workers will prevent the browser from freezing
-      if (_this.cache == null) {
+      if (!_this.cache || _this.cache[from] == null) {
         //Compute the first year
         computePaths(from, from)
         //DIsable the slider

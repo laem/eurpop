@@ -11,7 +11,15 @@ path {
 
 line {
   stroke: #fff;
-  opacity: 0.14
+  opacity: 0.08
+}
+
+#title {
+  text-align: left;
+  position: relative;
+  left: 50%;
+  margin-left: -380px;
+  width: 800px
 }
 
 #chosenYear {
