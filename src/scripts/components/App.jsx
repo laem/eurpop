@@ -12,6 +12,7 @@ var React = require('react/addons');
 // CSS
 require('../../styles/reset.css');
 require('../../styles/main.css');
+require('../../libs/font-awesome-4.2.0/css/font-awesome.min.css')
 
 var _ = require('underscore.deferred')
 //var Miso = require("../../libs/miso.dataset/miso.ds.deps.min.0.4.1.js");
