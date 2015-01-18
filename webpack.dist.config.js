@@ -10,9 +10,16 @@ var webpack = require('webpack');
 
 module.exports = {
   output: {
-    publicPatch: 'assets/',
+    publicPatch: '/assets/',
     path: 'dist/assets/',
     filename: 'main.js'
+  },
+
+  node: {
+    fs: "empty",
+    tls: "empty",
+    net: "empty",
+    //json: "empty"
   },
 
   debug: false,
