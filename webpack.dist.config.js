@@ -10,7 +10,7 @@ var webpack = require('webpack');
 
 module.exports = {
   output: {
-    publicPatch: '/assets/',
+    publicPath: '/assets/',
     path: 'dist/assets/',
     filename: 'main.js'
   },

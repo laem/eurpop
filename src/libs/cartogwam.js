@@ -29,7 +29,7 @@
 
  require('./d3.js')
 
- var Worker = require("worker!./worker");
+ var Worker = require("worker!./worker.js");
  var _ = require('underscore.deferred')
 
  function cartogwam(geo, values) {
