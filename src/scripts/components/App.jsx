@@ -46,7 +46,7 @@ var Visualisation = require('./Visualisation.jsx')
 
 var App = React.createClass({
   getInitialState: function(){
-    return {ds: null}
+    return {ds: null, introduced: '1'}
   },
   componentDidMount: function(){
     var _this = this
@@ -60,11 +60,59 @@ var App = React.createClass({
     });
   },
   render: function() {
+
+    var intro = {
+      'yes': <div/>,
+      '1': <div>
+            <p id="i1">
+              What would Europe look like,
+              if country boundaries were redrawn every year according to population growth ?
+            </p>
+            <div id="next" onClick={this.to1}>
+              I don't know !
+            </div>
+          </div>
+          ,
+      '2': <div>
+            <p id="i2">
+              This is 1960. Look at the size of Germany, more than twice as big as Spain.
+            </p>
+            <div id="next" className="white" onClick={this.introduced}>
+              Check it out
+            </div>
+          </div>
+    }
+
+    var opacities = {'yes': 0, '1': 0.97, '2': 0.65 }
+
+    var overlayStyle = {
+        background: 'rgba(0, 0, 0, ' + opacities[this.state.introduced] + ')',
+        display: this.state.introduced === 'yes' ? 'none' : 'block'
+    }
+
     return (
       <div className='main'>
-          <Visualisation population={this.state.population} fertility={this.state.fertility}/>
+          <div
+            id="overlay"
+            style={overlayStyle}>
+            <div id="intro">
+              {intro[this.state.introduced]}
+            </div>
+          </div>
+          <Visualisation
+            intro={this.state.introduced !== 'yes' ? 'introMode' : ''}
+            population={this.state.population}
+            fertility={this.state.fertility}
+          />
       </div>
     );
+  },
+
+  to1: function(){
+    this.setState({introduced: '2'})
+  },
+  introduced: function(){
+    this.setState({introduced: 'yes'})
   }
 });
 

@@ -29,57 +29,62 @@ line {
   margin-left: 5px;
 }
 
-/* Legend */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  text-align: center
+}
 
-.legendBlock {
-  color: rgba(255, 255, 255, 0.86);
-  width: 400px;
-  left: 50%;
-  position: relative;
+#intro {
+  margin-top: 19%;
+  width: 600px;
   -webkit-transform: translateX(-50%);
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
-}
-.legendBlock em {
-  color: rgb(157, 157, 157)
-}
-
-.legendBlock p {
-  color: #eee;
-  margin-bottom: 3%
+  left: 50%;
+  position: relative;
+  font-size: 32px;
+  font-weight: 200;
+  text-align: center
 }
 
-.legendBlock p.info {
-  color: #767676;
-  font-style: italic;
-  font-size: 12px
+#intro #i2 {
+  font-weight: 300
 }
 
-.legendBlock h3 {
-  color: #767676
+#intro #next {
+  margin-top: 4%;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  padding: 6px;
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  line-height: 32px
 }
 
-#legend {
-    padding: 0.5em 0 0 1.5em;
-    width: 500px;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+#intro #next:hover {
+  background: rgba(255, 255, 255, 0.05)
 }
 
-#legend li.key {
-    border-top-width: 15px;
-    border-top-style: solid;
-    font-size: 1em;
-    width: 10%;
-    padding-left: 0;
-    padding-right: 0;
-    float: left;
-    line-height: 26px;
+#intro #next.white{
+  background: rgba(255, 255, 255, 0.25)
 }
+
+.introMode .hiddenForIntro {
+  visibility: hidden
+}
+
+
+
 
 /* Dragdealer */
 
+#dragContainer {
+}
 
 .dragdealer {
   position: relative;
@@ -119,4 +124,54 @@ line {
 .dragdealer .disabled i {
   font-size: 28px;
   padding: 8px
+}
+
+
+/* Legend */
+
+.legendBlock {
+  color: rgba(255, 255, 255, 0.86);
+  width: 400px;
+  left: 50%;
+  position: relative;
+  -webkit-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+}
+.legendBlock em {
+  color: rgb(157, 157, 157)
+}
+
+.legendBlock p {
+  color: #eee;
+  margin-bottom: 3%
+}
+
+.legendBlock p.info {
+  color: #767676;
+  font-style: italic;
+  font-size: 12px
+}
+
+.legendBlock h3 {
+  color: #767676
+}
+
+#legend {
+  padding: 0.5em 0 0 1.5em;
+  width: 500px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#legend li.key {
+  border-top-width: 15px;
+  border-top-style: solid;
+  font-size: 1em;
+  width: 10%;
+  padding-left: 0;
+  padding-right: 0;
+  float: left;
+  line-height: 26px;
 }

@@ -1,4 +1,9 @@
 /**
+
+This React component displays some divs around the maps,
+and calls cartogram web workers to compute projections of europe for every year from @from to @to.
+Yes it should be splitted.
+
  * @jsx React.DOM
  */
 
@@ -61,22 +66,22 @@ var Visualisation = React.createClass({
                             :
         'fa fa fa-cog fa-spin';
 
-
     return (
-        <div className="centered">
-
-          <h1 id="title">A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
-          <div id="dragContainer">
-            <div className="dragdealer" id="timeSlider">
-              <div ref="timeHandle" className={slideClass}>
-                <i className={handleClass}></i>
+        <div className={"centered " + this.props.intro}>
+          <div className="hiddenForIntro">
+            <h1 id="title" >A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
+            <div id="dragContainer">
+              <div className="dragdealer" id="timeSlider">
+                <div ref="timeHandle" className={slideClass}>
+                  <i className={handleClass}></i>
+                </div>
               </div>
             </div>
           </div>
           <div  id="playground" ref="playground"
                 data-comment="the map or bar chart will be drawn here"
           ></div>
-          <div className="legendBlock">
+          <div className="legendBlock hiddenForIntro">
             {message}
             <h3><em>Fertility rate</em></h3>
             <ul id="legend"></ul>
