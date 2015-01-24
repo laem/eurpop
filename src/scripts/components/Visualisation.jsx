@@ -37,7 +37,8 @@ var Visualisation = React.createClass({
     return {
       year: from,
       focus: null,
-      processed: false
+      processed: false,
+      trueMap: false
     }
   },
   render: function () {
@@ -78,13 +79,22 @@ var Visualisation = React.createClass({
               </div>
             </div>
           </div>
-          <div  id="playground" ref="playground"
+          <div  id="playground"
+                ref="playground"
                 data-comment="the map or bar chart will be drawn here"
           ></div>
           <div className="legendBlock hiddenForIntro">
             {message}
             <h3><em>Fertility rate</em></h3>
             <ul id="legend"></ul>
+          </div>
+          <div
+              id="trueMap"
+              onMouseOver={this.switchCartoGeo}
+              onMouseOut={this.switchCartoGeo}>
+            <p>Back</p>
+            <i className="fa fa-globe"></i>
+            <p>to reality</p>
           </div>
 
         </div>
@@ -148,15 +158,21 @@ var Visualisation = React.createClass({
     this.setState({year: from + Math.round(x * (span - 1))})
   },
 
-  componentDidUpdate: function () {
+  switchCartoGeo: function(){
+    this.setState({trueMap: !this.state.trueMap})
+  },
+
+  componentDidUpdate: function (prevProps, prevState) {
     var _this = this
 
     /* Wait for data */
     if (!this.props.population || !this.props.fertility) return;
 
+    var switchCartoGeo = prevState.trueMap != this.state.trueMap
+
     var playground = this.refs.playground.getDOMNode()
     var drawnYear = playground.dataset.year
-    if (drawnYear == this.state.year){
+    if (drawnYear == this.state.year && !switchCartoGeo){
       return
     } else {
       playground.dataset.year = this.state.year
@@ -233,14 +249,30 @@ debugger;
       }
 
       function drawCartogram(){
+
         playground.innerHTML = ''
         svg = d3.select(playground).append("svg")
         svg.attr("width", x).attr("height", y - 250);
-        var states = _this.cache[_this.state.year]
 
-        // path with identity projection
-        var path = d3.geo.path()
-        .projection(null);
+        var path, states;
+        if (_this.state.trueMap){
+          // Show the real geographical map
+
+          var projection = d3.geo.mercator()
+          //.center([0, 0])
+          .scale(y)
+          .translate([0.43 * x, 1.35 * y])
+
+          path = d3.geo.path().projection(projection)
+          states = topojson.feature(_this.topojsonData, _this.topojsonData.objects.admin0);
+        } else {
+          //Draw the population cartogram with cached data
+          states = _this.cache[_this.state.year]
+
+          // path with identity projection
+          path = d3.geo.path()
+          .projection(null);
+        }
 
         var nodes = [],
         links = [];

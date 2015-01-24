@@ -1,3 +1,6 @@
+Close button on intro;
+Link to git added
+
 TODO
 
 Remarques de Julien.
@@ -9,25 +12,17 @@ Remarques de Julien.
 - Peut être aussi mettre une partie du "trail" en pointillés pour souligner encore plus la projection.
 
 
-Button to show the real map
-Don't like maps ? Bars
-
-
 Core
 ----
-
-Transitions
-No cartogram button (test !)
-Random texts
-
-Full
+Miso
+Blinking arrow to show what to do
 
 Nettoyer, notamment Cartogwam, dans un fichier, README.
 
+Plus
+-----
+
+Don't like maps ? Bars
+Transitions
+Random texts for intro
 Recalculer au redimensionnement n'est pas génial...
-
-Analytics
-
-Explain briefly what it is while calculating
-
-(Blinking ?) Arrow to show what to do

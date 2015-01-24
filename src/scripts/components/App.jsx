@@ -46,7 +46,7 @@ var Visualisation = require('./Visualisation.jsx')
 
 var App = React.createClass({
   getInitialState: function(){
-    return {ds: null, introduced: '1'}
+    return {ds: null, introduced: 'yes'}
   },
   componentDidMount: function(){
     var _this = this
@@ -92,10 +92,17 @@ var App = React.createClass({
 
     return (
       <div className='main'>
+          <a href="https://github.com/laem/eurpop" target="_blank" id="info">
+            <i className="fa fa-git" title="Fork me"></i>
+          </a>
           <div
             id="overlay"
             style={overlayStyle}>
+
             <div id="intro">
+              <div id="close">
+                <i className="fa fa-times" onClick={this.introduced}></i>
+              </div>
               {intro[this.state.introduced]}
             </div>
           </div>
