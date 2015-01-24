@@ -28,7 +28,7 @@ var frmttr = require('frmttr')()
 var Dragdealer = require('../../libs/dragdealer.js')
 
 var from = 1960,
-    to = 2030,
+    to = 2050,
     span = to - from + 1;
 
 
@@ -91,11 +91,15 @@ var Visualisation = React.createClass({
           <div
               id="trueMap"
               onMouseOver={this.switchCartoGeo}
-              onMouseOut={this.switchCartoGeo}>
+              onMouseOut={this.switchCartoGeo}
+              className="hiddenForIntro">
             <p>Back</p>
             <i className="fa fa-globe"></i>
             <p>to reality</p>
           </div>
+          <a className="hiddenForIntro" href="https://github.com/laem/eurpop" target="_blank" id="info">
+            <i className="fa fa-git" title="Fork me"></i>
+          </a>
 
         </div>
       );

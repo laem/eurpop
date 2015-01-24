@@ -1,6 +1,3 @@
-Close button on intro;
-Link to git added
-
 TODO
 
 Remarques de Julien.
@@ -14,15 +11,14 @@ Remarques de Julien.
 
 Core
 ----
-Miso
-Blinking arrow to show what to do
 
 Nettoyer, notamment Cartogwam, dans un fichier, README.
 
 Plus
 -----
 
+Blinking arrow to show what to do
 Don't like maps ? Bars
 Transitions
 Random texts for intro
-Recalculer au redimensionnement n'est pas génial...
+Recalculer au redimensionnement c'est pas génial...

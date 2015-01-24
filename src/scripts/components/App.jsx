@@ -20,18 +20,19 @@ var Miso = require("miso.dataset");
 
 var spreadsheetKey = '1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ'
 
-var data = {
-  1: require('json!../../data/population.json'),
-  2: require('json!../../data/fertility.json')
-}
+//Local data for dev
+//var data = {
+//  1: require('json!../../data/population.json'),
+//  2: require('json!../../data/fertility.json')
+//}
 
 function constructMiso(worksheetIndex){
 
   //Load from local jsons
+  //return new Miso.Dataset({
+  //  data: data[worksheetIndex]
+  //})
 
-  return new Miso.Dataset({
-    data: data[worksheetIndex]
-  })
   //Load from google spreadsheet
   return new Miso.Dataset({
     importer : Miso.Dataset.Importers.GoogleSpreadsheet,
@@ -46,7 +47,7 @@ var Visualisation = require('./Visualisation.jsx')
 
 var App = React.createClass({
   getInitialState: function(){
-    return {ds: null, introduced: 'yes'}
+    return {ds: null, introduced: '1'}
   },
   componentDidMount: function(){
     var _this = this
@@ -92,9 +93,6 @@ var App = React.createClass({
 
     return (
       <div className='main'>
-          <a href="https://github.com/laem/eurpop" target="_blank" id="info">
-            <i className="fa fa-git" title="Fork me"></i>
-          </a>
           <div
             id="overlay"
             style={overlayStyle}>
