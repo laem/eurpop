@@ -21,17 +21,17 @@ var Miso = require("miso.dataset");
 var spreadsheetKey = '1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ'
 
 //Local data for dev
-//var data = {
-//  1: require('json!../../data/population.json'),
-//  2: require('json!../../data/fertility.json')
-//}
+var data = {
+  1: require('json!../../data/population.json'),
+  2: require('json!../../data/fertility.json')
+}
 
 function constructMiso(worksheetIndex){
 
   //Load from local jsons
-  //return new Miso.Dataset({
-  //  data: data[worksheetIndex]
-  //})
+  return new Miso.Dataset({
+    data: data[worksheetIndex]
+  })
 
   //Load from google spreadsheet
   return new Miso.Dataset({

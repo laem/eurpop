@@ -19,7 +19,7 @@ require('../../styles/visualisation.css');
 
 var topojson = require('../../libs/topojson.v1.min.js')
 //require('../../libs/cartogram_eurpop.js')
-var cartogwam = require('../../libs/cartogwam.js')
+var cartogramaster = require('../../libs/cartogram/cartogramaster.js')
 /* Country shapes, will be used to draw the map */
 var topojsonData = require('json!../../data/lala.json')
 var frmttr = require('frmttr')()
@@ -49,6 +49,7 @@ var Visualisation = React.createClass({
     if (focus != null){
       var name = this.getCountryName(focus)
       var population = this.getCountryMeasure('population', focus, this.state.year)
+      var fertility = this.getLastKnownMeasure('fertility', focus, this.state.year)
 
 
       var verb = this.state.year > year ? 'could have' : 'had',
@@ -57,7 +58,10 @@ var Visualisation = React.createClass({
       message = <p>
                   {name} {verb}
                   <span title={pop.alt}> {pop.regular} </span>
-                  citizens in {this.state.year}
+                  citizens in {this.state.year}, <br/>
+                  a fertility rate of
+                  <span> {fertility} </span>
+
               </p>
     }
     var slideClass = this.state.year > year ? 'handle red-bar estimate' : 'handle red-bar'
@@ -127,13 +131,29 @@ var Visualisation = React.createClass({
   getCountryMeasure: function(metric, code, year){
     var countries = this.props[metric].column(['Country Code']).data
     var index = countries.indexOf(code)
-    return this.props.population.column([year]).data[index]
+    return this.props[metric].column([year]).data[index]
+  },
+
+  getLastKnownMeasure: function(metric, code, year){
+    var _this = this
+    var countries = this.props[metric].column(['Country Code']).data
+    var index = countries.indexOf(code)
+
+    function getMeasure(yyyy){
+      return _this.props[metric].column([yyyy]).data[index]
+    }
+    var measure = getMeasure(year)
+    while (measure === ".."){ //NaN : estimates can span half decades.
+      year --;
+      measure = getMeasure(year)
+    }
+    return measure
   },
 
   // Get an object of countryId: metric pairs for a given metric and year
   getValuesForYear: function(metric, year){
     var countries = this.props[metric].column(['Country Code']).data
-    var data = this.props.population.column([year]).data
+    var data = this.props[metric].column([year]).data
     //zip these two collections
     var result = {}
     countries.forEach(function(c, i){
@@ -203,7 +223,7 @@ var Visualisation = React.createClass({
       if (x * y == 0) return;
 
       var states, year = _this.state.year;
-debugger;
+
       //Pre-compute the map for every year.
       //Web workers will prevent the browser from freezing
       if (!_this.cache || _this.cache[from] == null) {
@@ -218,7 +238,6 @@ debugger;
       }
 
       function computePaths(f, t, enableDragdealer){
-        console.time('processing')
 
         var values = {}
         //for each year
@@ -227,11 +246,18 @@ debugger;
           values[year] = _this.getValuesForYear('population', year)
         }
 
-        var promiseOfGeos = cartogwam({
-          topology: _this.topojsonData,
-          geometries: _this.topojsonData.objects.admin0.geometries,
-          anchorSize: {x: x, y: y}
-        }, values);
+        var promiseOfGeos = cartogramaster({
+            topology: _this.topojsonData,
+            geometries: _this.topojsonData.objects.admin0.geometries,
+            projection: {
+              name: 'mercator',
+              translation: [0.43 * x, 1.35 * y],
+              scaling: y
+            }
+          },
+          values,
+          'iso_a3'
+        );
 
         promiseOfGeos.progress(function(value){
           document.querySelector('#timeSlider').style.width = Math.round(value * 100) + "%"
@@ -347,17 +373,7 @@ debugger;
           var code = d.feature.properties.iso_a3,
           y = _this.state.year;
 
-          var countries = _this.props.fertility.column(['Country Code']).data
-          var index = countries.indexOf(code)
-
-          function getMeasure(yyyy){
-            return _this.props.fertility.column([yyyy]).data[index]
-          }
-          var measure = getMeasure(y)
-          while (measure === ".."){ //NaN : estimates can span half decades.
-            y --;
-            measure = getMeasure(y)
-          }
+          var measure = _this.getLastKnownMeasure('fertility', code, y)
           measure = parseFloat(measure.replace(',', '.'))
 
           return colors(measure)

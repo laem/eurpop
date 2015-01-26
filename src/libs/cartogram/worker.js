@@ -1,37 +1,23 @@
 
-//Use a partial d3 build
-//https://github.com/mbostock/smash/wiki
+//Use a partial d3 build, that doesn't need the DOM.
 require('./d3.geo/d3f.js')
-
-var transformer = function(tf) {
-  var kx = tf.scale[0],
-  ky = tf.scale[1],
-  dx = tf.translate[0],
-  dy = tf.translate[1];
-
-  function transform(c) {
-    return [c[0] * kx + dx, c[1] * ky + dy];
-  }
-
-  transform.invert = function(c) {
-    return [(c[0] - dx) / kx, (c[1]- dy) / ky];
-  };
-
-  return transform;
-};
 
 onmessage = function(event) {
 
   if (event.data.do === 'carto'){
-    var geo = event.data.geo;
-    var topology = geo.topology,
-        geometries = geo.geometries,
-        path = geo.path,
-        x = geo.anchorSize.x,
-        y = geo.anchorSize.y,
-        values = event.data.values,
-        task = event.data.task;
 
+    var geo = event.data.geo,
+          topology = geo.topology,
+          geometries = geo.geometries,
+          path = geo.path,
+          translation = geo.translation,
+          projectionName = geo.projection.name,
+          scaling = geo.projection.scaling,
+          translation = geo.projection.translation;
+
+    var values = event.data.values,
+        featureProperty = event.data.featureProperty,
+        task = event.data.task;
 
     // copy it first
     topology = copy(topology);
@@ -39,11 +25,10 @@ onmessage = function(event) {
     // objects are projected into screen coordinates
     // project the arcs into screen space
 
-    //TODO temporary
-    var projection = d3f.geo.mercator()
-    //.center([0, 0])
-    .scale(y)
-    .translate([0.43 * x, 1.35 * y])
+    var projection =
+          d3f.geo[projectionName]()
+            .scale(scaling)
+            .translate(translation)
 
 
     var tf = transformer(topology.transform),x,y,nArcVertices,vI,out1,nArcs=topology.arcs.length,aI=0,
@@ -78,9 +63,8 @@ onmessage = function(event) {
       };
     });
 
-    //TODO temporary
-    value = function(d){
-      return values[d.properties.iso_a3]
+    function value(d){
+      return values[d.properties[featureProperty]]
     }
 
     var values = objects.map(value),
@@ -254,3 +238,20 @@ function reverse(array, n) {
 function properties(obj) {
   return obj.properties || {};
 }
+
+function transformer(tf) {
+  var kx = tf.scale[0],
+  ky = tf.scale[1],
+  dx = tf.translate[0],
+  dy = tf.translate[1];
+
+  function transform(c) {
+    return [c[0] * kx + dx, c[1] * ky + dy];
+  }
+
+  transform.invert = function(c) {
+    return [(c[0] - dx) / kx, (c[1]- dy) / ky];
+  };
+
+  return transform;
+};

@@ -8,6 +8,6 @@ Fertility rate estimates span half decades.
 [Spreadsheet](https://docs.google.com/a/qunb.com/spreadsheets/d/1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ/edit#gid=205837150)
 
 
-*This is just an experiment*, not scientific work, with important flaws. Some islands are not drawn (sorry, Corsica). Boundaries are simplified, to avoid turning your computer into your main space heater.
+*This is just an experiment*, not scientific work, with important flaws. Some islands are not drawn (sorry, Corsica). Some countries have been evolving in that period of time. Boundaries are simplified, to avoid turning your computer into your main space heater.
 
 Using a web-worker fork of [cartogram.js](http://prag.ma/code/d3-cartogram/), [D3.js](http://d3js.org/), inspired by [Force-Directed States of America](http://bl.ocks.org/mbostock/1073373), using [miso dataset](http://misoproject.com/dataset/).
