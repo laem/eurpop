@@ -209,18 +209,21 @@ var Visualisation = React.createClass({
 
     var svg;
 
-    window.onresize = function(){
-      _this.cache = {} // flush the cartogram cache
-      draw()
-    };
+    function newBrowserSize(){
+      var x = w.innerWidth || e.clientWidth || g.clientWidth;
+      var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+      if (x * y == 0) return;
+      d3.select("#leSVG").attr("width", x).attr("height", y - 250)
+    }
+
+    window.onresize = newBrowserSize
 
     draw()
 
     function draw(){
-      // for scaling, http://stackoverflow.com/questions/14492284/center-a-map-in-d3-given-a-geojson-object
-      var x = w.innerWidth || e.clientWidth || g.clientWidth;
-      var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
-      if (x * y == 0) return;
+
+      var maxX = window.screen.availWidth
+      var maxY = window.screen.availHeight
 
       var states, year = _this.state.year;
 
@@ -251,8 +254,8 @@ var Visualisation = React.createClass({
             geometries: _this.topojsonData.objects.admin0.geometries,
             projection: {
               name: 'mercator',
-              translation: [0.43 * x, 1.35 * y],
-              scaling: y
+              translation: [0.35 * maxX, 1.95 * maxY],
+              scaling: maxY * 1.5
             }
           },
           values,
@@ -281,17 +284,19 @@ var Visualisation = React.createClass({
       function drawCartogram(){
 
         playground.innerHTML = ''
-        svg = d3.select(playground).append("svg")
-        svg.attr("width", x).attr("height", y - 250);
+        svg = d3.select(playground).append("svg").attr("id", "leSVG")
+        newBrowserSize()
+        svg.attr("viewBox", "0 0 " + maxX + " " + maxY)
 
         var path, states;
         if (_this.state.trueMap){
           // Show the real geographical map
 
+          //TODO what's that projection for ?
           var projection = d3.geo.mercator()
           //.center([0, 0])
-          .scale(y)
-          .translate([0.43 * x, 1.35 * y])
+          //.scale(y)
+          //.translate([0.43 * x, 1.35 * y])
 
           path = d3.geo.path().projection(projection)
           states = topojson.feature(_this.topojsonData, _this.topojsonData.objects.admin0);
