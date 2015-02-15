@@ -44,7 +44,7 @@ var Visualisation = React.createClass({
       focus: null,
       processed: false,
       trueMap: false,
-      barsPlease: true
+      barsPlease: false
     }
   },
 
@@ -307,8 +307,8 @@ var Visualisation = React.createClass({
           //TODO what's that projection for ?
           var projection = d3.geo.mercator()
           //.center([0, 0])
-          //.scale(y)
-          //.translate([0.43 * x, 1.35 * y])
+          .scale(maxY * 1.5)
+          .translate([0.35 * maxX, 1.95 * maxY])
 
           path = d3.geo.path().projection(projection)
           states = topojson.feature(_this.topojsonData, _this.topojsonData.objects.admin0);
