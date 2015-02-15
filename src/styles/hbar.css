@@ -1,0 +1,27 @@
+.HBar{
+  margin-top: 30px;
+  margin-bottom: 30px;
+  /*
+  border: 1px dashed rgba(255, 255, 255, 0.13);
+  */
+}
+
+.HBar rect {
+  fill: #018670
+}
+
+.HBar .left {
+  fill: white
+}
+
+.HBar .right {
+  fill: white;
+}
+
+.HBar .axis {
+  stroke: #018670;
+}
+
+.HBar text {
+  font-size: 18px
+}
