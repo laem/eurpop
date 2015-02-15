@@ -115,14 +115,22 @@ var Visualisation = React.createClass({
             <ul id="legend"></ul>
           </div>
 
-          <div
-              id="trueMap"
-              onMouseOver={this.switchCartoGeo}
-              onMouseOut={this.switchCartoGeo}
-              className="hiddenForIntro disabledWhenBars">
-            <p>Back</p>
-            <i className="fa fa-globe"></i>
-            <p>to reality</p>
+          <div className="actions">
+            <div
+                id="trueMap"
+                onMouseOver={this.switchCartoGeo}
+                onMouseOut={this.switchCartoGeo}
+                className="action hiddenForIntro disabledWhenBars">
+              <i className="fa fa-globe"></i>
+              <p>Back to reality</p>
+            </div>
+            <div
+                id="visMode"
+                onClick={this.switchVisMode}
+                className="action hiddenForIntro">
+              <i className={this.state.barsPlease ? "fa fa-undo" : "fa fa-bar-chart"}></i>
+              <p>Change mode</p>
+            </div>
           </div>
 
           <a className="hiddenForIntro" href="https://github.com/laem/eurpop" target="_blank" id="info">
@@ -172,6 +180,10 @@ var Visualisation = React.createClass({
     this.setState({trueMap: !this.state.trueMap})
   },
 
+  switchVisMode: function(){
+    this.setState({barsPlease: !this.state.barsPlease})
+  },
+
   getWindowDimensions: function(){
     debugger;
     var d = document,
@@ -193,7 +205,7 @@ var Visualisation = React.createClass({
     var playground = this.refs.playground.getDOMNode()
     var drawnYear = playground.dataset.year
 
-    /* React only
+    /* Continue only
       - when the viz requested is the map
       - on year change
       - on a real map toggle

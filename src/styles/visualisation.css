@@ -199,24 +199,35 @@ line {
 
 
 
-#trueMap {
-  opacity: 0.70;
+.actions {
   position: absolute;
   left: 1%;
-  top: 49%;
+  top: 38%
+}
+
+.action {
+  margin-bottom: 30%
+}
+
+.action p {
+  width: 100px;
+}
+
+.action i {
+  opacity: 1;
+  font-size: 52px;
+  padding: 8px
+}
+
+.action#trueMap {
   cursor: default;
 }
-
-#trueMap:hover {
-  opacity: 0.95
+.action#trueMap:hover {
+  color: #1A9850
 }
 
-#trueMap p {
-  width: 100px
-}
-
-#trueMap i {
-  font-size: 52px;
+.action#visMode {
+  cursor: pointer;
 }
 
 
