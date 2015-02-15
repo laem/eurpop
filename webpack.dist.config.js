@@ -67,6 +67,10 @@ module.exports = {
       },
       { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: "file-loader"
+      },
+      { test: /\.js$/,
+        exclude: /node_modules/,
+        loader: '6to5-loader'
       }
     ]
   }

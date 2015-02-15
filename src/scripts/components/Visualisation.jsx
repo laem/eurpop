@@ -24,6 +24,8 @@ var cartogramaster = require('../../libs/cartogram/cartogramaster.js')
 var topojsonData = require('json!../../data/lala.json')
 var frmttr = require('frmttr')()
 
+var HBar = require('react-horizontal-bar-chart')
+
 /* Used for the time slider */
 var Dragdealer = require('../../libs/dragdealer.js')
 
@@ -38,9 +40,21 @@ var Visualisation = React.createClass({
       year: from,
       focus: null,
       processed: false,
-      trueMap: false
+      trueMap: false,
+      barsPlease: false
     }
   },
+
+  componentDidMount: function(){
+    this.prepareData()
+    this.componentDidUpdate()
+    this.dragdealer = new Dragdealer('timeSlider',{
+      steps: 30,
+      animationCallback: this.timeChanged,
+      disabled: true
+    });
+  },
+
   render: function () {
     var year = new Date().getFullYear()
 
@@ -87,6 +101,9 @@ var Visualisation = React.createClass({
                 ref="playground"
                 data-comment="the map or bar chart will be drawn here"
           ></div>
+          <div id="barsPlayground">
+            {this.renderBars()}
+          </div>
           <div className="legendBlock hiddenForIntro">
             {message}
             <h3><em>Fertility rate</em></h3>
@@ -109,73 +126,26 @@ var Visualisation = React.createClass({
       );
   },
 
-  prepareData: function(){
-    // Select all 28 european geometries (grouped for testing)
-    var pays = ["FRA", "ESP", "GBR", "ITA", "PRT", "CHE", "IRL", "BEL", "LUX"]
-    pays = pays.concat(["NLD", "DEU", "AUT", "HUN", "POL", "CZE", "DNK" ])
-    // Sorry northern countries, the screen's to small for you...
-    //pays = pays.concat(["SWE", "EST", "FIN", "LTU", "LVA"])
-    pays = pays.concat(["GRC", "CYP"]) // no geometry for "MLT" :-(
-    pays = pays.concat(["ROU", "BGR", "HRV", "SVN", "SVK"])
+  renderBars: function(){
+    if (!this.state.barsPlease || !this.props.population) return;
 
-    this.topojsonData = topojsonData
+    this.dragdealer.enable()
 
-    this.topojsonData.objects.admin0.geometries = topojsonData.objects.admin0.geometries.filter(function(geometry) {
-       var code = geometry.properties.iso_a3
-       return pays.indexOf(code) > -1
+    var values = this.getValuesForYear('population', this.state.year)
+
+    // values should be a {v: 18, label: "Joseph"} array
+    var data = Object.keys(values).map(id => {
+      var value = values[id]
+      return {
+          v: value,
+          label: id
+      }
     })
 
-  },
 
-  /* metric should be 'population' or 'fertility' */
-  getCountryMeasure: function(metric, code, year){
-    var countries = this.props[metric].column(['Country Code']).data
-    var index = countries.indexOf(code)
-    return this.props[metric].column([year]).data[index]
-  },
+    return <HBar data={data} />
+    //YEAHYEAH
 
-  getLastKnownMeasure: function(metric, code, year){
-    var _this = this
-    var countries = this.props[metric].column(['Country Code']).data
-    var index = countries.indexOf(code)
-
-    function getMeasure(yyyy){
-      return _this.props[metric].column([yyyy]).data[index]
-    }
-    var measure = getMeasure(year)
-    while (measure === ".."){ //NaN : estimates can span half decades.
-      year --;
-      measure = getMeasure(year)
-    }
-    return measure
-  },
-
-  // Get an object of countryId: metric pairs for a given metric and year
-  getValuesForYear: function(metric, year){
-    var countries = this.props[metric].column(['Country Code']).data
-    var data = this.props[metric].column([year]).data
-    //zip these two collections
-    var result = {}
-    countries.forEach(function(c, i){
-      result[c] = data[i]
-    })
-    return result
-  },
-
-  getCountryName: function(code){
-    var countries = this.props['population'].column(['Country Code']).data
-    var index = countries.indexOf(code)
-    return this.props.population.column(['Country Name']).data[index]
-  },
-
-  componentDidMount: function(){
-    this.prepareData()
-    this.componentDidUpdate()
-    this.dragdealer = new Dragdealer('timeSlider',{
-      steps: 30,
-      animationCallback: this.timeChanged,
-      disabled: true
-    });
   },
 
   timeChanged: function(x, y){
@@ -189,29 +159,34 @@ var Visualisation = React.createClass({
   componentDidUpdate: function (prevProps, prevState) {
     var _this = this
 
-    /* Wait for data */
+    /* Do not react if no data yet */
     if (!this.props.population || !this.props.fertility) return;
-
-    var switchCartoGeo = prevState.trueMap != this.state.trueMap
 
     var playground = this.refs.playground.getDOMNode()
     var drawnYear = playground.dataset.year
-    if (drawnYear == this.state.year && !switchCartoGeo){
-      return
-    } else {
-      playground.dataset.year = this.state.year
-    }
 
-    var w = window,
-    d = document,
+    /* React only
+      - when the viz requested is the map
+      - on year change
+      - on a real map toggle
+    */
+    var switchCartoGeo = prevState.trueMap != this.state.trueMap
+
+    if (drawnYear == this.state.year
+        && !switchCartoGeo
+        || this.state.barsPlease
+        ) return
+      else playground.dataset.year = this.state.year
+
+    var d = document,
     e = d.documentElement,
     g = d.getElementsByTagName('body')[0]
 
     var svg;
 
     function newBrowserSize(){
-      var x = w.innerWidth || e.clientWidth || g.clientWidth;
-      var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+      var x = window.innerWidth || e.clientWidth || g.clientWidth;
+      var y = window.innerHeight|| e.clientHeight|| g.clientHeight;
       if (x * y == 0) return;
       d3.select("#leSVG").attr("width", x).attr("height", y - 250)
     }
@@ -312,7 +287,7 @@ var Visualisation = React.createClass({
         var nodes = [],
         links = [];
 
-        states.features.forEach(function(d, i) {
+        states.features.forEach((d, i) => {
           var centroid = path.centroid(d);
           if (centroid.some(isNaN)) {
             return;
@@ -323,7 +298,7 @@ var Visualisation = React.createClass({
           nodes.push(centroid);
         });
 
-        d3.geom.voronoi().links(nodes).forEach(function(link) {
+        d3.geom.voronoi().links(nodes).forEach(link => {
           var dx = link.source.x - link.target.x,
           dy = link.source.y - link.target.y;
           link.distance = Math.sqrt(dx * dx + dy * dy);
@@ -386,7 +361,68 @@ var Visualisation = React.createClass({
       }
 
       }
-    }
+    },
+
+    /**************
+    DATA METHODS
+    ***************/
+
+    prepareData: function(){
+      // Select all 28 european geometries (grouped for testing)
+      var pays = ["FRA", "ESP", "GBR", "ITA", "PRT", "CHE", "IRL", "BEL", "LUX"]
+      pays = pays.concat(["NLD", "DEU", "AUT", "HUN", "POL", "CZE", "DNK" ])
+      // Sorry northern countries, the screen's to small for you...
+      //pays = pays.concat(["SWE", "EST", "FIN", "LTU", "LVA"])
+      pays = pays.concat(["GRC", "CYP"]) // no geometry for "MLT" :-(
+        pays = pays.concat(["ROU", "BGR", "HRV", "SVN", "SVK"])
+
+        this.topojsonData = topojsonData
+
+        this.topojsonData.objects.admin0.geometries = topojsonData.objects.admin0.geometries.filter(function(geometry) {
+          var code = geometry.properties.iso_a3
+          return pays.indexOf(code) > -1
+        })
+
+      },
+
+      /* metric should be 'population' or 'fertility' */
+      getCountryMeasure: function(metric, code, year){
+        var countries = this.props[metric].column(['Country Code']).data
+        var index = countries.indexOf(code)
+        return this.props[metric].column([year]).data[index]
+      },
+
+      getLastKnownMeasure: function(metric, code, year){
+        var _this = this
+        var countries = this.props[metric].column(['Country Code']).data
+        var index = countries.indexOf(code)
+
+        function getMeasure(yyyy){
+          return _this.props[metric].column([yyyy]).data[index]
+        }
+        var measure = getMeasure(year)
+        while (measure === ".."){ //NaN : estimates can span half decades.
+          year --;
+          measure = getMeasure(year)
+        }
+        return measure
+      },
+
+      // Get an object of countryId: metric pairs for a given metric and year
+      getValuesForYear: function(metric, year){
+        var countries = this.props[metric].column(['Country Code']).data
+        var data = this.props[metric].column([year]).data
+        //zip these two collections
+        var result = {}
+        countries.forEach((c, i) => result[c] = data[i])
+        return result
+      },
+
+      getCountryName: function(code){
+        var countries = this.props['population'].column(['Country Code']).data
+        var index = countries.indexOf(code)
+        return this.props.population.column(['Country Name']).data[index]
+      },
 
 });
 
