@@ -22,9 +22,12 @@ var topojson = require('../../libs/topojson.v1.min.js')
 var cartogramaster = require('../../libs/cartogram/cartogramaster.js')
 /* Country shapes, will be used to draw the map */
 var topojsonData = require('json!../../data/lala.json')
-var frmttr = require('frmttr')()
+var frmttr = require('frmttr')
 
 var HBar = require('react-horizontal-bar-chart')
+require('../../styles/hbar.css')
+var formatter = (value) => frmttr()(value).regular;
+
 
 /* Used for the time slider */
 var Dragdealer = require('../../libs/dragdealer.js')
@@ -41,7 +44,7 @@ var Visualisation = React.createClass({
       focus: null,
       processed: false,
       trueMap: false,
-      barsPlease: false
+      barsPlease: true
     }
   },
 
@@ -80,15 +83,17 @@ var Visualisation = React.createClass({
     }
     var slideClass = this.state.year > year ? 'handle red-bar estimate' : 'handle red-bar'
     var handleClass =
-      this.state.processed  ?
+      this.state.processed || this.state.barsPlease  ?
         (this.state.year > year ? 'fa fa-angle-double-right ' : 'fa fa-long-arrow-right')
                             :
         'fa fa fa-cog fa-spin';
 
+    var barsMode = this.state.barsPlease ? ' barsMode' : ''
+
     return (
-        <div className={"centered " + this.props.intro}>
+        <div className={"centered " + this.props.intro + barsMode}>
           <div className="hiddenForIntro">
-            <h1 id="title" >A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
+            <h1 id="title" className="disabledWhenBars">A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
             <div id="dragContainer">
               <div className="dragdealer" id="timeSlider">
                 <div ref="timeHandle" className={slideClass}>
@@ -104,20 +109,22 @@ var Visualisation = React.createClass({
           <div id="barsPlayground">
             {this.renderBars()}
           </div>
-          <div className="legendBlock hiddenForIntro">
+          <div className="legendBlock hiddenForIntro disabledWhenBars">
             {message}
             <h3><em>Fertility rate</em></h3>
             <ul id="legend"></ul>
           </div>
+
           <div
               id="trueMap"
               onMouseOver={this.switchCartoGeo}
               onMouseOut={this.switchCartoGeo}
-              className="hiddenForIntro">
+              className="hiddenForIntro disabledWhenBars">
             <p>Back</p>
             <i className="fa fa-globe"></i>
             <p>to reality</p>
           </div>
+
           <a className="hiddenForIntro" href="https://github.com/laem/eurpop" target="_blank" id="info">
             <i className="fa fa-git" title="Fork me"></i>
           </a>
@@ -136,14 +143,23 @@ var Visualisation = React.createClass({
     // values should be a {v: 18, label: "Joseph"} array
     var data = Object.keys(values).map(id => {
       var value = values[id]
+      var name = this.getCountryName(id)
       return {
           v: value,
-          label: id
+          label: name
       }
     })
 
+    var width = window.screen.availWidth
+    var height = window.screen.availHeight
 
-    return <HBar data={data} />
+    return <HBar
+              data={data}
+              width={width * 2 / 3}
+              height={height - 260}
+              sort="descending"
+              formatter={formatter}
+            />
     //YEAHYEAH
 
   },
@@ -154,6 +170,18 @@ var Visualisation = React.createClass({
 
   switchCartoGeo: function(){
     this.setState({trueMap: !this.state.trueMap})
+  },
+
+  getWindowDimensions: function(){
+    debugger;
+    var d = document,
+    e = d.documentElement,
+    g = d.getElementsByTagName('body')[0];
+
+    var x = window.innerWidth || e.clientWidth || g.clientWidth;
+    var y = window.innerHeight|| e.clientHeight|| g.clientHeight;
+
+    return [x, y]
   },
 
   componentDidUpdate: function (prevProps, prevState) {
@@ -178,15 +206,12 @@ var Visualisation = React.createClass({
         ) return
       else playground.dataset.year = this.state.year
 
-    var d = document,
-    e = d.documentElement,
-    g = d.getElementsByTagName('body')[0]
+
 
     var svg;
 
     function newBrowserSize(){
-      var x = window.innerWidth || e.clientWidth || g.clientWidth;
-      var y = window.innerHeight|| e.clientHeight|| g.clientHeight;
+      var [x, y] = _this.getWindowDimensions();
       if (x * y == 0) return;
       d3.select("#leSVG").attr("width", x).attr("height", y - 250)
     }

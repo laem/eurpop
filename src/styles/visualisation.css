@@ -57,6 +57,10 @@
   visibility: hidden
 }
 
+.barsMode .disabledWhenBars {
+  display: none
+}
+
 
 
 #title {
