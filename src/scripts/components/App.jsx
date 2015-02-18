@@ -121,6 +121,6 @@ var App = React.createClass({
   }
 });
 
-React.renderComponent(<App />, document.getElementById('content')); // jshint ignore:line
+React.render(<App />, document.getElementById('content')); // jshint ignore:line
 
 module.exports = App;

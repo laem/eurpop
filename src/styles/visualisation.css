@@ -225,6 +225,9 @@ line {
 .action#trueMap:hover {
   color: #1A9850
 }
+.action#visMode:hover {
+  color: #198099
+}
 
 .action#visMode {
   cursor: pointer;

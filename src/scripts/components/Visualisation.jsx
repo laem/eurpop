@@ -24,7 +24,7 @@ var cartogramaster = require('../../libs/cartogram/cartogramaster.js')
 var topojsonData = require('json!../../data/lala.json')
 var frmttr = require('frmttr')
 
-var HBar = require('react-horizontal-bar-chart')
+var HBar = require('babel!react-horizontal-bar-chart')
 require('../../styles/hbar.css')
 var formatter = (value) => frmttr()(value).regular;
 
@@ -58,6 +58,24 @@ var Visualisation = React.createClass({
     });
   },
 
+  /*********************************
+   State changing methods */
+
+  timeChanged: function(x, y){
+    this.setState({year: from + Math.round(x * (span - 1))})
+  },
+
+  switchCartoGeo: function(){
+    this.setState({trueMap: !this.state.trueMap})
+  },
+
+  switchVisMode: function(){
+    this.setState({barsPlease: !this.state.barsPlease})
+  },
+
+  /*******************
+   Rendering methods */
+
   render: function () {
     var year = new Date().getFullYear()
 
@@ -72,14 +90,15 @@ var Visualisation = React.createClass({
       var verb = this.state.year > year ? 'could have' : 'had',
           pop = frmttr(population);
 
-      message = <p>
-                  {name} {verb}
-                  <span title={pop.alt}> {pop.regular} </span>
-                  citizens in {this.state.year}, <br/>
-                  a fertility rate of
-                  <span> {fertility} </span>
-
-              </p>
+      message = (
+        <p>
+          {name} {verb}
+          <span title={pop.alt}> {pop.regular} </span>
+          citizens in {this.state.year}, <br/>
+          a fertility rate of
+          <span> {fertility} </span>
+        </p>
+      )
     }
     var slideClass = this.state.year > year ? 'handle red-bar estimate' : 'handle red-bar'
     var handleClass =
@@ -102,10 +121,11 @@ var Visualisation = React.createClass({
               </div>
             </div>
           </div>
-          <div  id="playground"
-                ref="playground"
-                data-comment="the map or bar chart will be drawn here"
-          ></div>
+          <div
+            id="playground"
+            ref="playground"
+            data-comment="the map or bar chart will be drawn here">
+          </div>
           <div id="barsPlayground">
             {this.renderBars()}
           </div>
@@ -129,7 +149,7 @@ var Visualisation = React.createClass({
                 onClick={this.switchVisMode}
                 className="action hiddenForIntro">
               <i className={this.state.barsPlease ? "fa fa-undo" : "fa fa-bar-chart"}></i>
-              <p>Change mode</p>
+              <p>{this.state.barsPlease ? 'Back to map': 'Ranking view'}</p>
             </div>
           </div>
 
@@ -139,6 +159,27 @@ var Visualisation = React.createClass({
 
         </div>
       );
+  },
+
+  componentDidUpdate: function (prevProps, prevState) {
+
+    // Do not react if the visualisation data yet isn't available yet
+    if (!this.props.population || !this.props.fertility) return;
+
+    var playground = this.refs.playground.getDOMNode(),
+        drawnYear = playground.dataset.year,
+        switchCartoGeo = prevState.trueMap != this.state.trueMap
+
+    if (this.state.barsPlease){
+      // Rendering the bar vis is handled by react. Remove the map
+      playground.innerHTML = ""
+    } else if (drawnYear == this.state.year && !switchCartoGeo) {
+      // The year hasn't changed, the map type (real boundaries vs cartogram) hasn't changed
+      // => do not rerender the map
+    } else {
+      playground.dataset.year = this.state.year
+      this.renderMap(playground)
+    }
   },
 
   renderBars: function(){
@@ -158,69 +199,21 @@ var Visualisation = React.createClass({
       }
     })
 
-    var width = window.screen.availWidth
-    var height = window.screen.availHeight
-
-    return <HBar
-              data={data}
-              width={width * 2 / 3}
-              height={height - 260}
-              sort="descending"
-              formatter={formatter}
-            />
-    //YEAHYEAH
+    return (
+      <HBar
+        data={data}
+        width={window.screen.availWidth * 2 / 3}
+        height={window.screen.availHeight - 260}
+        sort="descending"
+        formatter={formatter}
+      />
+    )
 
   },
 
-  timeChanged: function(x, y){
-    this.setState({year: from + Math.round(x * (span - 1))})
-  },
-
-  switchCartoGeo: function(){
-    this.setState({trueMap: !this.state.trueMap})
-  },
-
-  switchVisMode: function(){
-    this.setState({barsPlease: !this.state.barsPlease})
-  },
-
-  getWindowDimensions: function(){
-    debugger;
-    var d = document,
-    e = d.documentElement,
-    g = d.getElementsByTagName('body')[0];
-
-    var x = window.innerWidth || e.clientWidth || g.clientWidth;
-    var y = window.innerHeight|| e.clientHeight|| g.clientHeight;
-
-    return [x, y]
-  },
-
-  componentDidUpdate: function (prevProps, prevState) {
-    var _this = this
-
-    /* Do not react if no data yet */
-    if (!this.props.population || !this.props.fertility) return;
-
-    var playground = this.refs.playground.getDOMNode()
-    var drawnYear = playground.dataset.year
-
-    /* Continue only
-      - when the viz requested is the map
-      - on year change
-      - on a real map toggle
-    */
-    var switchCartoGeo = prevState.trueMap != this.state.trueMap
-
-    if (drawnYear == this.state.year
-        && !switchCartoGeo
-        || this.state.barsPlease
-        ) return
-      else playground.dataset.year = this.state.year
-
-
-
-    var svg;
+  renderMap: function(){
+    var _this = this,
+        svg;
 
     function newBrowserSize(){
       var [x, y] = _this.getWindowDimensions();
@@ -401,8 +394,7 @@ var Visualisation = React.createClass({
     },
 
     /**************
-    DATA METHODS
-    ***************/
+    Data methods */
 
     prepareData: function(){
       // Select all 28 european geometries (grouped for testing)
@@ -420,46 +412,60 @@ var Visualisation = React.createClass({
           return pays.indexOf(code) > -1
         })
 
-      },
+    },
 
-      /* metric should be 'population' or 'fertility' */
-      getCountryMeasure: function(metric, code, year){
-        var countries = this.props[metric].column(['Country Code']).data
-        var index = countries.indexOf(code)
-        return this.props[metric].column([year]).data[index]
-      },
+    /* metric should be 'population' or 'fertility' */
+    getCountryMeasure: function(metric, code, year){
+      var countries = this.props[metric].column(['Country Code']).data
+      var index = countries.indexOf(code)
+      return this.props[metric].column([year]).data[index]
+    },
 
-      getLastKnownMeasure: function(metric, code, year){
-        var _this = this
-        var countries = this.props[metric].column(['Country Code']).data
-        var index = countries.indexOf(code)
+    getLastKnownMeasure: function(metric, code, year){
+      var _this = this
+      var countries = this.props[metric].column(['Country Code']).data
+      var index = countries.indexOf(code)
 
-        function getMeasure(yyyy){
-          return _this.props[metric].column([yyyy]).data[index]
-        }
-        var measure = getMeasure(year)
-        while (measure === ".."){ //NaN : estimates can span half decades.
-          year --;
-          measure = getMeasure(year)
-        }
-        return measure
-      },
+      function getMeasure(yyyy){
+        return _this.props[metric].column([yyyy]).data[index]
+      }
+      var measure = getMeasure(year)
+      while (measure === ".."){ //NaN : estimates can span half decades.
+        year --;
+        measure = getMeasure(year)
+      }
+      return measure
+    },
 
-      // Get an object of countryId: metric pairs for a given metric and year
-      getValuesForYear: function(metric, year){
-        var countries = this.props[metric].column(['Country Code']).data
-        var data = this.props[metric].column([year]).data
-        //zip these two collections
-        var result = {}
-        countries.forEach((c, i) => result[c] = data[i])
-        return result
-      },
+    // Get an object of countryId: metric pairs for a given metric and year
+    getValuesForYear: function(metric, year){
+      var countries = this.props[metric].column(['Country Code']).data
+      var data = this.props[metric].column([year]).data
+      //zip these two collections
+      var result = {}
+      countries.forEach((c, i) => result[c] = data[i])
+      return result
+    },
 
-      getCountryName: function(code){
-        var countries = this.props['population'].column(['Country Code']).data
-        var index = countries.indexOf(code)
-        return this.props.population.column(['Country Name']).data[index]
-      },
+    getCountryName: function(code){
+      var countries = this.props['population'].column(['Country Code']).data
+      var index = countries.indexOf(code)
+      return this.props.population.column(['Country Name']).data[index]
+    },
+
+    /**********************
+      Misc */
+
+    getWindowDimensions: function(){
+      var d = document,
+      e = d.documentElement,
+      g = d.getElementsByTagName('body')[0];
+
+      var x = window.innerWidth || e.clientWidth || g.clientWidth;
+      var y = window.innerHeight|| e.clientHeight|| g.clientHeight;
+
+      return [x, y]
+    },
 
 });
 
