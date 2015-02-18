@@ -44,7 +44,8 @@ var Visualisation = React.createClass({
       focus: null,
       processed: false,
       trueMap: false,
-      barsPlease: false
+      barsPlease: false,
+      handleDiscovery: ' pulse' //className
     }
   },
 
@@ -73,6 +74,10 @@ var Visualisation = React.createClass({
     this.setState({barsPlease: !this.state.barsPlease})
   },
 
+  handleDiscovered: function(){
+    this.setState({handleDiscovery: ''})
+  },
+
   /*******************
    Rendering methods */
 
@@ -88,7 +93,7 @@ var Visualisation = React.createClass({
 
 
       var verb = this.state.year > year ? 'could have' : 'had',
-          pop = frmttr(population);
+          pop = frmttr()(population);
 
       message = (
         <p>
@@ -105,7 +110,7 @@ var Visualisation = React.createClass({
       this.state.processed || this.state.barsPlease  ?
         (this.state.year > year ? 'fa fa-angle-double-right ' : 'fa fa-long-arrow-right')
                             :
-        'fa fa fa-cog fa-spin';
+        'fa fa-cog fa-spin';
 
     var barsMode = this.state.barsPlease ? ' barsMode' : ''
 
@@ -115,8 +120,8 @@ var Visualisation = React.createClass({
             <h1 id="title" className="disabledWhenBars">A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
             <div id="dragContainer">
               <div className="dragdealer" id="timeSlider">
-                <div ref="timeHandle" className={slideClass}>
-                  <i className={handleClass}></i>
+                <div ref="timeHandle" className={slideClass} onMouseOver={this.handleDiscovered}>
+                  <i className={handleClass + this.state.handleDiscovery}></i>
                 </div>
               </div>
             </div>

@@ -1,27 +1,29 @@
 TODO
 
-Remarques de Julien.
+Remarques de Jay.
 
 - Hover countries for figures : Gênant qu'il disparaisse ensuite. Le message est-il vraiment nécessaire ?
+> Une fois que la population est affichée pour un pays, on comprend l'action.
 - Ajouter un label pour expliquer que la déformation de la taille des pays est proportionnelle à la population ?
+> intro ajoutée pour le site entier
 - Titre général : je le trouve pas assez précis. Pourquoi pas European population and fertility
+> j'aime bien le titre A map of europeans, qui contraste avec map of europe. Le taux de fécondité n'est qu'un bonus.
 - Peut être un autre label "Slide to change year" sur le slide, sinon faire en sorte qu'il ressemble plus à un bouton.
+> Je vais animer le curseur
 - Peut être aussi mettre une partie du "trail" en pointillés pour souligner encore plus la projection.
+> Le style du bouton change maintenant
 
 
 Core
 ----
 
-Nettoyer Viz + bars
-
-Pays !!
+Régler l'animation des barres
+Vérifier les pays et justifier les choix dans le readme / exactitude des métadonnées !!
 
 Plus
 -----
 
-Blinking arrow to show what to do
-Don't like maps ? Bars
-Mode where the fertility rate scale is calculated every year. It enables a focus on the comparison between countries.
-Colors denoting pop / surface.
-Transitions
+Alternatives :
+- Mode where the fertility rate scale is calculated every year. It enables a focus on the comparison between countries.
+- Colors denoting pop / surface.
 Random texts for intro

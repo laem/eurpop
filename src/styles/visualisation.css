@@ -121,6 +121,27 @@ line {
   left: 0;
   cursor: pointer;
 }
+
+.dragdealer .handle i.pulse:not(.fa-spin) {
+  animation:pulse 3s;
+  -moz-animation:pulse 3s infinite; /* Firefox */
+  -webkit-animation:pulse 3s infinite; /* Safari and Chrome */
+}
+
+@-moz-keyframes pulse /* Firefox */
+{
+  0%   {opacity:1;}
+  50% {opacity: 0.15}
+  100%   {opacity:1;}
+}
+
+@-webkit-keyframes pulse /* Safari and Chrome */
+{
+  0%   {opacity:1;}
+  50% {opacity: 0.15}
+  100%   {opacity:1;}
+}
+
 .dragdealer .red-bar {
   width: 100px;
   height: 40px;
