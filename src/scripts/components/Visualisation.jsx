@@ -44,7 +44,7 @@ var Visualisation = React.createClass({
       focus: null,
       processed: false,
       trueMap: false,
-      barsPlease: true,
+      barsPlease: false,
       handleDiscovery: ' pulse' //className
     }
   },

@@ -47,7 +47,7 @@ var Visualisation = require('./Visualisation.jsx')
 
 var App = React.createClass({
   getInitialState: function(){
-    return {ds: null, introduced: 'yes'}
+    return {ds: null, introduced: '1'}
   },
   componentDidMount: function(){
     var _this = this
