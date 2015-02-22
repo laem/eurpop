@@ -44,7 +44,7 @@ var Visualisation = React.createClass({
       focus: null,
       processed: false,
       trueMap: false,
-      barsPlease: false,
+      barsPlease: true,
       handleDiscovery: ' pulse' //className
     }
   },
@@ -193,8 +193,7 @@ var Visualisation = React.createClass({
     this.dragdealer.enable()
 
     var values = this.getValuesForYear('population', this.state.year)
-
-    // values should be a {v: 18, label: "Joseph"} array
+    // values should be an array of {v: 18, label: "Joseph"} objects
     var data = Object.keys(values).map(id => {
       var value = values[id]
       var name = this.getCountryName(id)
@@ -211,6 +210,8 @@ var Visualisation = React.createClass({
         height={window.screen.availHeight - 260}
         sort="descending"
         formatter={formatter}
+        flash="true"
+        barColor="#018670"
       />
     )
 
@@ -448,7 +449,9 @@ var Visualisation = React.createClass({
       var data = this.props[metric].column([year]).data
       //zip these two collections
       var result = {}
-      countries.forEach((c, i) => result[c] = data[i])
+      countries.forEach((c, i) => {
+        if (c != null) result[c] = data[i]
+        })
       return result
     },
 
