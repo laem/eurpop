@@ -42,7 +42,7 @@
  * });
  */
 
-require('../d3.js')
+require('d3')
 
 var Worker = require("worker!./worker.js");
 var _ = require('underscore.deferred')

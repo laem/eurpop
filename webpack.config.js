@@ -32,6 +32,8 @@
     reasons: true
   },
 
+  profile: true,
+
   resolve: {
     extensions: ['','.js','.jsx']
   },
@@ -46,18 +48,6 @@
     loaders: [{
       test: /\.css$/,
       loader: 'style!css'
-    }, {
-      test: /\.gif/,
-      loader: 'url-loader?limit=10000&mimetype=image/gif'
-    }, {
-      test: /\.jpg/,
-      loader: 'url-loader?limit=10000&mimetype=image/jpg'
-    }, {
-      test: /\.png/,
-      loader: 'url-loader?limit=10000&mimetype=image/png'
-    }, {
-      test: /\.jsx$/,
-      loader: 'jsx-loader'
     },
     { test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/,
       loader: "url-loader?limit=10000&minetype=application/font-woff"

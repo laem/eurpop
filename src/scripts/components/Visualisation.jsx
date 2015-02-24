@@ -10,14 +10,14 @@ Yes it should be splitted.
 'use strict';
 
 var React = require('react/addons');
-require('../../libs/d3.js')
+require('d3')
 var _ = require('underscore.deferred')
 
 var colorbrewer = require('../../libs/colorbrewer.js')
 
 require('../../styles/visualisation.css');
 
-var topojson = require('../../libs/topojson.v1.min.js')
+var topojson = require('topojson')
 //require('../../libs/cartogram_eurpop.js')
 var cartogramaster = require('../../libs/cartogram/cartogramaster.js')
 /* Country shapes, will be used to draw the map */
@@ -30,7 +30,7 @@ var formatter = (value) => frmttr()(value).regular;
 
 
 /* Used for the time slider */
-var Dragdealer = require('../../libs/dragdealer.js')
+var Dragdealer = require('dragdealer')
 
 var from = 1960,
     to = 2050,
