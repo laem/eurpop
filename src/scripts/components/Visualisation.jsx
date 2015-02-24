@@ -130,10 +130,12 @@ var Visualisation = React.createClass({
             id="playground"
             ref="playground"
             data-comment="the map or bar chart will be drawn here">
+            {
+              this.state.barsPlease ?
+                this.renderBars() : <div ref="mapPlayground" id="mapPlayground"></div>
+            }
           </div>
-          <div id="barsPlayground">
-            {this.renderBars()}
-          </div>
+
           <div className="legendBlock hiddenForIntro disabledWhenBars">
             {message}
             <h3><em>Fertility rate</em></h3>
@@ -170,20 +172,22 @@ var Visualisation = React.createClass({
 
     // Do not react if the visualisation data yet isn't available yet
     if (!this.props.population || !this.props.fertility) return;
+    debugger;
+    var mapPlayground = this.refs.mapPlayground,
+        yearChanged = prevState.year !== this.state.year,
+        switchCartoGeo = prevState.trueMap != this.state.trueMap,
+        switchBarsMap = prevState.barsPlease != this.state.trueMap;
 
-    var playground = this.refs.playground.getDOMNode(),
-        drawnYear = playground.dataset.year,
-        switchCartoGeo = prevState.trueMap != this.state.trueMap
 
-    if (this.state.barsPlease){
-      // Rendering the bar vis is handled by react. Remove the map
-      playground.innerHTML = ""
-    } else if (drawnYear == this.state.year && !switchCartoGeo) {
-      // The year hasn't changed, the map type (real boundaries vs cartogram) hasn't changed
-      // => do not rerender the map
-    } else {
-      playground.dataset.year = this.state.year
-      this.renderMap(playground)
+    if (mapPlayground != undefined){
+      if (  yearChanged || switchCartoGeo || switchBarsMap
+            || mapPlayground.getDOMNode().innerHTML === "" ){
+        this.renderMap(mapPlayground)
+      } else {
+        // Neither the year, the map type (real boundaries vs cartogram),
+        // and the visualisation type (map or bars) has changed
+        // => do not rerender the map
+      }
     }
   },
 
@@ -294,8 +298,8 @@ var Visualisation = React.createClass({
 
       function drawCartogram(){
 
-        playground.innerHTML = ''
-        svg = d3.select(playground).append("svg").attr("id", "leSVG")
+        mapPlayground.innerHTML = ''
+        svg = d3.select(mapPlayground).append("svg").attr("id", "leSVG")
         newBrowserSize()
         svg.attr("viewBox", "0 0 " + maxX + " " + maxY)
 
