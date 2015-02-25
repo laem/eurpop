@@ -21,7 +21,7 @@ var topojson = require('topojson')
 //require('../../libs/cartogram_eurpop.js')
 var cartogramaster = require('../../libs/cartogram/cartogramaster.js')
 /* Country shapes, will be used to draw the map */
-var topojsonData = require('json!../../data/lala.json')
+var topojsonData = require('json!../../data/lala1.json')
 var frmttr = require('frmttr')
 
 var HBar = require('babel!react-horizontal-bar-chart')
