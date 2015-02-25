@@ -172,7 +172,7 @@ var Visualisation = React.createClass({
 
     // Do not react if the visualisation data yet isn't available yet
     if (!this.props.population || !this.props.fertility) return;
-    debugger;
+
     var mapPlayground = this.refs.mapPlayground,
         yearChanged = prevState.year !== this.state.year,
         switchCartoGeo = prevState.trueMap != this.state.trueMap,
@@ -283,7 +283,6 @@ var Visualisation = React.createClass({
 
         promiseOfGeos.then(function(a){
           _this.cache = a
-          console.timeEnd('processing')
           drawCartogram()
           if (enableDragdealer){
             _this.setState({processed: true})

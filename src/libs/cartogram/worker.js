@@ -19,11 +19,16 @@ onmessage = function(event) {
         featureProperty = event.data.featureProperty,
         task = event.data.task;
 
+
+
     // copy it first
     topology = copy(topology);
 
+
+
     // objects are projected into screen coordinates
     // project the arcs into screen space
+
 
     var projection =
           d3f.geo[projectionName]()
@@ -53,6 +58,8 @@ onmessage = function(event) {
     var path = d3f.geo.path()
     .projection(null);
 
+
+
     var objects = object(projectedArcs, {type: "GeometryCollection", geometries: geometries})
     .geometries.map(function(geom) {
       return {
@@ -72,26 +79,39 @@ onmessage = function(event) {
 
     var iterations = 8;
 
+
+    //console.time("processing:" + task)
     var i = 0;
     while (i++ < iterations) {
-      var areas = objects.map(path.area),
-      totalArea = areas.reduce(function(a,b){return a + b}),
-      sizeErrorsTot = 0,
-      sizeErrorsNum = 0,
+
+      //var areas = objects.map(path.area)
+      //var totalArea = areas.reduce(function(a,b){return a + b}),
+      var areas = [], totalArea = 0;
+      for (var k = 0; k < objects.length; k++){
+        var area = path.area(objects[k])
+        areas.push(area)
+        totalArea += area
+      }
+
+      var sizeErrorsTot = 0,
+      sizeErrorsNum = 0;
 
       ///for i = 1 to n do
-      meta = objects.map(function(o, j) {
-        var area = Math.abs(areas[j]), // XXX: why do we have negative areas?
-        v = +values[j],
-        ///Compute AD i , the desired area of the ith cell
-        desired = totalArea * v / totalValue,
-        radius = Math.sqrt(area / Math.PI),
-        mass = Math.sqrt(desired / Math.PI) - radius,
-        sizeError = Math.max(area, desired) / Math.min(area, desired);
+      var meta = []
+      for (var j = 0; j < objects.length; j++){
+        var o = objects[j],
+            area = Math.abs(areas[j]), // XXX: why do we have negative areas?
+            v = +values[j],
+            ///Compute AD i , the desired area of the ith cell
+            desired = totalArea * v / totalValue,
+            radius = Math.sqrt(area / Math.PI),
+            mass = Math.sqrt(desired / Math.PI) - radius,
+            sizeError = Math.max(area, desired) / Math.min(area, desired);
+
         sizeErrorsTot+=sizeError;
         sizeErrorsNum++;
         // console.log(o.id, "@", j, "area:", area, "value:", v, "->", desired, radius, mass, sizeError);
-        return {
+        meta.push({
           id:         o.id,
           area:       area,
           centroid:   path.centroid(o),
@@ -101,11 +121,11 @@ onmessage = function(event) {
           radius:     radius,
           mass:       mass,
           sizeError:  sizeError
-        };
-      });
+        })
+      }
 
-      var sizeError = sizeErrorsTot/sizeErrorsNum,
-      forceReductionFactor = 1 / (1 + sizeError);
+      var sizeError = sizeErrorsTot / sizeErrorsNum,
+          forceReductionFactor = 1 / (1 + sizeError);
 
       // console.log("meta:", meta);
       // console.log("  total area:", totalArea);
@@ -138,8 +158,9 @@ onmessage = function(event) {
               : mass *
               (distSquared / rSquared) *
               (4 - 3 * dist / radius);
-              delta[0]+=(Fij * cosArctan(dy,dx));
-              delta[1]+=(Fij * sinArctan(dy,dx));
+              var tans = arctans(dy, dx)
+              delta[0]+=(Fij * tans.cos);
+              delta[1]+=(Fij * tans.sin);
             }
             pI++;
           }
@@ -153,6 +174,9 @@ onmessage = function(event) {
       // break if we hit the target size error
       if (sizeError <= 1) break;
     }
+
+    //console.timeEnd("processing:" + task)
+
 
     self.postMessage({
       done: 'processing',
@@ -177,6 +201,22 @@ function copyObject(o) {
   return obj;
 }
 
+//Grouping cosArctan and sinArctan (see below)
+function arctans(dx, dy){
+  var div = dx/dy,
+      sqrt = Math.sqrt(1+(div*div)),
+      signedSqrt = (dy > 0) ? sqrt : -sqrt,
+      cos = 1 / signedSqrt,
+      sin = div * cos;
+
+  return {
+    cos: cos,
+    sin: sin
+  }
+}
+
+/*
+
 function cosArctan(dx,dy){
   var div = dx/dy;
   return (dy>0)?
@@ -190,6 +230,8 @@ function sinArctan(dx,dy){
   (div/Math.sqrt(1+(div*div))):
   (-div/Math.sqrt(1+(div*div)));
 }
+
+*/
 
 function object(arcs, o) {
   function arc(i, points) {

@@ -47,7 +47,7 @@ require('d3')
 var Worker = require("worker!./worker.js");
 var _ = require('underscore.deferred')
 
-function cartogwam(geo, values, featureProperty) {
+function cartogramaster(geo, values, featureProperty) {
   var dfd = new _.Deferred();
 
   // How many cartograms to compute ?
@@ -107,4 +107,4 @@ return dfd
 };
 
 
-module.exports = cartogwam
+module.exports = cartogramaster
