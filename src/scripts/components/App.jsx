@@ -15,7 +15,6 @@ require('../../styles/main.css');
 require('../../libs/font-awesome-4.2.0/css/font-awesome.min.css')
 
 var _ = require('underscore.deferred')
-//var Miso = require("../../libs/miso.dataset/miso.ds.deps.min.0.4.1.js");
 var Miso = require("miso.dataset");
 
 var spreadsheetKey = '1ervP2v1tVgEdKyGuwn7KUdy4UaVYQ3wWRKITv7V2XLQ'
@@ -47,7 +46,11 @@ var Visualisation = require('./Visualisation.jsx')
 
 var App = React.createClass({
   getInitialState: function(){
-    return {ds: null, introduced: 'yes'}
+    return {
+      ds: null,
+      introduced: 'yes',
+      preprocessed: true
+    }
   },
   componentDidMount: function(){
     var _this = this
@@ -61,6 +64,7 @@ var App = React.createClass({
     });
   },
   render: function() {
+
 
     var intro = {
       'yes': <div/>,
@@ -108,6 +112,7 @@ var App = React.createClass({
             intro={this.state.introduced !== 'yes' ? 'introMode' : ''}
             population={this.state.population}
             fertility={this.state.fertility}
+            preprocessed={this.state.preprocessed}
           />
       </div>
     );

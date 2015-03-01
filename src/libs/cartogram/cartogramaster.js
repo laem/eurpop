@@ -42,9 +42,17 @@
  * });
  */
 
-require('d3')
+function spawnWorker(){
+  if (typeof window !== 'undefined'){
+    var Worker = require("worker!./worker.js");
+    return new Worker
+  } else {
+    var Worker = require('./worker.js')
+    return new Worker()
+  }
+};
 
-var Worker = require("worker!./worker.js");
+
 var _ = require('underscore.deferred')
 
 function cartogramaster(geo, values, featureProperty) {
@@ -71,7 +79,7 @@ function cartogramaster(geo, values, featureProperty) {
   // Spawn 8 workers max, feed them sequentially until all tasks are done.
   while (workers.length < 9 && tasks.length > 0){
 
-   var worker = new Worker
+   var worker = spawnWorker()
    workers.push(worker)
 
    work(worker, tasks.pop())
@@ -81,9 +89,12 @@ function cartogramaster(geo, values, featureProperty) {
   function work(worker, i){
 
    worker.onmessage = function(event){
-     if (event.data.done === 'processing'){
+     var data = event
+     if (typeof event.data!== 'undefined') data = event.data
+
+     if (data.done === 'processing'){
        dfd.notify(Object.keys(results).length / n)
-       results[event.data.task] = event.data
+       results[data.task] = data
 
        //the end
        if (Object.keys(results).length === n){

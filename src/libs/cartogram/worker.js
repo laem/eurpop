@@ -1,12 +1,24 @@
-
 //Use a partial d3 build, that doesn't need the DOM.
 require('./d3.geo/d3f.js')
+var Helpers = require('./helpers')
 
-onmessage = function(event) {
 
-  if (event.data.do === 'carto'){
+if (typeof onmessage !== 'undefined'){
+  onmessage = messaged
+} else {
+  function Wo(){}
+  Wo.prototype.postMessage = messaged
+  Wo.prototype.terminate = function(){}
+  module.exports = Wo
+}
 
-    var geo = event.data.geo,
+function messaged(event) {
+  var data = event
+  if (typeof event.data!== 'undefined') data = event.data
+
+  if (data.do === 'carto'){
+
+    var geo = data.geo,
           topology = geo.topology,
           geometries = geo.geometries,
           path = geo.path,
@@ -15,14 +27,14 @@ onmessage = function(event) {
           scaling = geo.projection.scaling,
           translation = geo.projection.translation;
 
-    var values = event.data.values,
-        featureProperty = event.data.featureProperty,
-        task = event.data.task;
+    var values = data.values,
+        featureProperty = data.featureProperty,
+        task = data.task;
 
 
 
     // copy it first
-    topology = copy(topology);
+    topology = Helpers.copy(topology);
 
 
 
@@ -36,7 +48,7 @@ onmessage = function(event) {
             .translate(translation)
 
 
-    var tf = transformer(topology.transform),x,y,nArcVertices,vI,out1,nArcs=topology.arcs.length,aI=0,
+    var tf = Helpers.transformer(topology.transform),x,y,nArcVertices,vI,out1,nArcs=topology.arcs.length,aI=0,
     projectedArcs = new Array(nArcs);
     while(aI < nArcs){
       x = 0;
@@ -60,12 +72,12 @@ onmessage = function(event) {
 
 
 
-    var objects = object(projectedArcs, {type: "GeometryCollection", geometries: geometries})
+    var objects = Helpers.object(projectedArcs, {type: "GeometryCollection", geometries: geometries})
     .geometries.map(function(geom) {
       return {
         type: "Feature",
         id: geom.id,
-        properties: properties.call(null, geom, topology),
+        properties: Helpers.properties.call(null, geom, topology),
         geometry: geom
       };
     });
@@ -74,8 +86,8 @@ onmessage = function(event) {
       return values[d.properties[featureProperty]]
     }
 
-    var values = objects.map(value),
-      totalValue = values.reduce(function(a,b){return a + b;});
+    var objectValues = objects.map(value),
+      totalValue = objectValues.reduce(function(a,b){return a + b;});
 
     var iterations = 8;
 
@@ -101,7 +113,7 @@ onmessage = function(event) {
       for (var j = 0; j < objects.length; j++){
         var o = objects[j],
             area = Math.abs(areas[j]), // XXX: why do we have negative areas?
-            v = +values[j],
+            v = +objectValues[j],
             ///Compute AD i , the desired area of the ith cell
             desired = totalArea * v / totalValue,
             radius = Math.sqrt(area / Math.PI),
@@ -158,7 +170,7 @@ onmessage = function(event) {
               : mass *
               (distSquared / rSquared) *
               (4 - 3 * dist / radius);
-              var tans = arctans(dy, dx)
+              var tans = Helpers.arctans(dy, dx)
               delta[0]+=(Fij * tans.cos);
               delta[1]+=(Fij * tans.sin);
             }
@@ -177,123 +189,17 @@ onmessage = function(event) {
 
     //console.timeEnd("processing:" + task)
 
-
-    self.postMessage({
+    var response = {
       done: 'processing',
       features: objects,
       arcs: projectedArcs,
       task: task
-    })
-  }
-}
-
-function copy(o) {
-  return (o instanceof Array)
-  ? o.map(copy)
-  : (typeof o === "string" || typeof o === "number")
-  ? o
-  : copyObject(o);
-}
-
-function copyObject(o) {
-  var obj = {};
-  for (var k in o) obj[k] = copy(o[k]);
-  return obj;
-}
-
-//Grouping cosArctan and sinArctan (see below)
-function arctans(dx, dy){
-  var div = dx/dy,
-      sqrt = Math.sqrt(1+(div*div)),
-      signedSqrt = (dy > 0) ? sqrt : -sqrt,
-      cos = 1 / signedSqrt,
-      sin = div * cos;
-
-  return {
-    cos: cos,
-    sin: sin
-  }
-}
-
-/*
-
-function cosArctan(dx,dy){
-  var div = dx/dy;
-  return (dy>0)?
-  (1/Math.sqrt(1+(div*div))):
-  (-1/Math.sqrt(1+(div*div)));
-}
-
-function sinArctan(dx,dy){
-  var div = dx/dy;
-  return (dy>0)?
-  (div/Math.sqrt(1+(div*div))):
-  (-div/Math.sqrt(1+(div*div)));
-}
-
-*/
-
-function object(arcs, o) {
-  function arc(i, points) {
-    if (points.length) points.pop();
-    for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length; k < n; ++k) {
-      points.push(a[k]);
     }
-    if (i < 0) reverse(points, n);
-  }
 
-  function line(arcs) {
-    var points = [];
-    for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
-    return points;
+    if (typeof self !== 'undefined'){
+      self.postMessage(response)
+    } else {
+      this.onmessage(response)
+    }
   }
-
-  function polygon(arcs) {
-    return arcs.map(line);
-  }
-
-  function geometry(o) {
-    o = Object.create(o);
-    o.properties = o.properties;
-    o.coordinates = geometryType[o.type](o.arcs);
-    //type is in o's prototype, which will be lost by worker.postMessage
-    o.type = o.type
-    return o;
-  }
-  var geometryType = {
-    LineString: line,
-    MultiLineString: polygon,
-    Polygon: polygon,
-    MultiPolygon: function(arcs) { return arcs.map(polygon); }
-  };
-
-  return o.type === "GeometryCollection"
-  ? (o = Object.create(o), o.geometries = o.geometries.map(geometry), o)
-  : geometry(o);
 }
-
-
-function reverse(array, n) {
-  var t, j = array.length, i = j - n; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
-}
-
-function properties(obj) {
-  return obj.properties || {};
-}
-
-function transformer(tf) {
-  var kx = tf.scale[0],
-  ky = tf.scale[1],
-  dx = tf.translate[0],
-  dy = tf.translate[1];
-
-  function transform(c) {
-    return [c[0] * kx + dx, c[1] * ky + dy];
-  }
-
-  transform.invert = function(c) {
-    return [(c[0] - dx) / kx, (c[1]- dy) / ky];
-  };
-
-  return transform;
-};

@@ -18,10 +18,14 @@ var colorbrewer = require('../../libs/colorbrewer.js')
 require('../../styles/visualisation.css');
 
 var topojson = require('topojson')
-//require('../../libs/cartogram_eurpop.js')
 var cartogramaster = require('../../libs/cartogram/cartogramaster.js')
-/* Country shapes, will be used to draw the map */
-var topojsonData = require('json!../../data/lala1.json')
+
+/* Country shapes, will be used to draw the map.
+Can be computed with wbeworkers or just loaded from an offline preprocessing.
+> See the prepareData method */
+var topojsonData = require('json!../../data/lala1.json'),
+    preprocessedData = require('json!../../data/reshapedEurope.json');
+
 var frmttr = require('frmttr')
 
 var HBar = require('babel!react-horizontal-bar-chart')
@@ -33,7 +37,7 @@ var formatter = (value) => frmttr()(value).regular;
 var Dragdealer = require('dragdealer')
 
 var from = 1960,
-    to = 2050,
+    to = 2014,
     span = to - from + 1;
 
 
@@ -253,6 +257,7 @@ var Visualisation = React.createClass({
         computePaths(from, to, true)
       } else { //The cache exists, just draw
         drawCartogram()
+        _this.dragdealer.enable()
       }
 
       function computePaths(f, t, enableDragdealer){
@@ -406,21 +411,13 @@ var Visualisation = React.createClass({
     Data methods */
 
     prepareData: function(){
-      // Select all 28 european geometries (grouped for testing)
-      var pays = ["FRA", "ESP", "GBR", "ITA", "PRT", "CHE", "IRL", "BEL", "LUX"]
-      pays = pays.concat(["NLD", "DEU", "AUT", "HUN", "POL", "CZE", "DNK" ])
-      // Sorry northern countries, the screen's to small for you...
-      //pays = pays.concat(["SWE", "EST", "FIN", "LTU", "LVA"])
-      pays = pays.concat(["GRC", "CYP"]) // no geometry for "MLT" :-(
-        pays = pays.concat(["ROU", "BGR", "HRV", "SVN", "SVK"])
 
-        this.topojsonData = topojsonData
+      var filterCountries = require('../processing/filterCountries.js')
+      this.topojsonData = filterCountries(topojsonData)
 
-        this.topojsonData.objects.admin0.geometries = topojsonData.objects.admin0.geometries.filter(function(geometry) {
-          var code = geometry.properties.iso_a3
-          return pays.indexOf(code) > -1
-        })
-
+      if (this.props.preprocessed){
+        this.cache = preprocessedData
+      }
     },
 
     /* metric should be 'population' or 'fertility' */
