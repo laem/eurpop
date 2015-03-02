@@ -1,31 +1,34 @@
   /*
   Cartogram forked from the original http://prag.ma/code/d3-cartogram/
 
-  - Designed to compute a series of cartograms, using web workers.
+  - Designed to compute a series of cartograms (called tasks),
+  using web workers, or in a single node thread.
 
-  - Attempts to add the effective range tip from Algorithms for Cartogram Animation,
+  - For this, only a subset of d3 is used, and the usage is more constrained.
+
+  - Also attempts to add the effective range tip from Algorithms for Cartogram Animation,
   by Ouyang et al., which should make it slightly faster.
 
   Usage :
   --------
 
-
   var promiseOfGeos = cartogramaster(
     {
       topology: topojsonData,
+      // the geometries of the GeometryCollection object to reshape :
       geometries: topojsonData.objects.OBJECTNAME.geometries,
-      anchorSize: {x: x, y: y},
       projection: {
-        name: "mercator",
-
-
+        name: 'mercator',
+        translation: [X,Y],
+        scaling: scaling
       }
     },
-    values
+    values, // { taskId => { geoJsonFeatureValue => area wanted} }
+    featureProperty // geoJsonFeatureIdKey to link geojson features to values
   );
 
 
- * Usage:
+ **** Original cartogram.js usage *********
  *
  * var cartogram = d3.cartogram()
  *  .projection(d3.geo.albersUsa())

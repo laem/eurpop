@@ -37,7 +37,7 @@ var formatter = (value) => frmttr()(value).regular;
 var Dragdealer = require('dragdealer')
 
 var from = 1960,
-    to = 2014,
+    to = 2050,
     span = to - from + 1;
 
 
@@ -211,6 +211,8 @@ var Visualisation = React.createClass({
       }
     })
 
+    var mapColors = colorbrewer.RdYlGn[7]
+
     return (
       <HBar
         data={data}
@@ -219,7 +221,7 @@ var Visualisation = React.createClass({
         sort="descending"
         formatter={formatter}
         flash="true"
-        barColor="#018670"
+        barColor={mapColors[mapColors.length - 1]}
       />
     )
 
@@ -244,7 +246,7 @@ var Visualisation = React.createClass({
       var maxX = window.screen.availWidth
       var maxY = window.screen.availHeight
 
-      var states, year = _this.state.year;
+      var year = _this.state.year;
 
       //Pre-compute the map for every year.
       //Web workers will prevent the browser from freezing
@@ -300,6 +302,7 @@ var Visualisation = React.createClass({
         });
       }
 
+
       function drawCartogram(){
 
         mapPlayground.innerHTML = ''
@@ -307,7 +310,7 @@ var Visualisation = React.createClass({
         newBrowserSize()
         svg.attr("viewBox", "0 0 " + maxX + " " + maxY)
 
-        var path, states;
+        var path, featureCollection;
         if (_this.state.trueMap){
           // Show the real geographical map
 
@@ -318,10 +321,11 @@ var Visualisation = React.createClass({
           .translate([0.35 * maxX, 1.95 * maxY])
 
           path = d3.geo.path().projection(projection)
-          states = topojson.feature(_this.topojsonData, _this.topojsonData.objects.admin0);
+          //convert to geojson
+          featureCollection = topojson.feature(_this.topojsonData, _this.topojsonData.objects.admin0);
         } else {
           //Draw the population cartogram with cached data
-          states = _this.cache[_this.state.year]
+          featureCollection = _this.cache[_this.state.year]
 
           // path with identity projection
           path = d3.geo.path()
@@ -331,7 +335,7 @@ var Visualisation = React.createClass({
         var nodes = [],
         links = [];
 
-        states.features.forEach((d, i) => {
+        featureCollection.features.forEach((d, i) => {
           var centroid = path.centroid(d);
           if (centroid.some(isNaN)) {
             return;
@@ -417,6 +421,7 @@ var Visualisation = React.createClass({
 
       if (this.props.preprocessed){
         this.cache = preprocessedData
+        this.setState({processed: true})
       }
     },
 

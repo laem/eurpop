@@ -71,7 +71,6 @@ function messaged(event) {
     .projection(null);
 
 
-
     var objects = Helpers.object(projectedArcs, {type: "GeometryCollection", geometries: geometries})
     .geometries.map(function(geom) {
       return {
@@ -191,8 +190,10 @@ function messaged(event) {
 
     var response = {
       done: 'processing',
+      //geohson featureCollection
       features: objects,
-      arcs: projectedArcs,
+      //arcs can be useful to reconstruct topojson :
+      //arcs: projectedArcs,
       task: task
     }
 

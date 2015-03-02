@@ -11,6 +11,9 @@ module.exports = function(topojsonData){
 
   var geometries = topojsonData.objects.admin0.geometries
 
+  //debug
+  //pays = ['FRA']
+
   topojsonData.objects.admin0.geometries =
     geometries.filter(function(geometry){return pays.indexOf(geometry.properties.iso_a3) > -1})
 

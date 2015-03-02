@@ -9,7 +9,7 @@ var topojsonData = require('../../data/lala1.json')
 var filterCountries = require('./filterCountries.js')
 
 var from = 1960,
-    to = 2014;
+    to = 2050;
 
 var GoogleSpreadsheets = require("google-spreadsheets");
 
@@ -47,8 +47,10 @@ function treatValues(values){
   var maxX = 1920,
       maxY = 1030;
 
+  var filteredTopojson = filterCountries(topojsonData)
+
   var promiseOfGeos = cartogramaster({
-      topology: filterCountries(topojsonData),
+      topology: filteredTopojson,
       geometries: topojsonData.objects.admin0.geometries,
       projection: {
         name: 'mercator',
@@ -63,7 +65,8 @@ function treatValues(values){
 
   promiseOfGeos.then(function(a){
     //console.log(JSON.stringify(a["1962"]));
-    fs.writeFile('src/data/reshapedEurope.json', JSON.stringify(a) , function (err) {
+    filteredTopojson.arcs = a["1960"].arcs
+    fs.writeFile('src/data/reshapedEuropeTopojson.json', JSON.stringify(filteredTopojson) , function (err) {
       if (err) throw err
       console.log("file saved")
     });
@@ -71,5 +74,10 @@ function treatValues(values){
   }).fail(function( err ){
     console.log(err.message); // "Oops!"
   });
+
+}
+
+//keep only a n decimals in geojson coordinates
+function simplifyGeojson(geo, n){
 
 }

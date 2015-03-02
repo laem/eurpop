@@ -46,6 +46,7 @@ function sinArctan(dx,dy){
 
 */
 
+// TODO what's this method for ? To optimize
 Helpers.object = function(arcs, o) {
   function arc(i, points) {
     if (points.length) points.pop();
@@ -67,7 +68,7 @@ Helpers.object = function(arcs, o) {
 
   function geometry(o) {
     o = Object.create(o);
-    o.properties = o.properties;
+    o.properties = o.properties; // TODO possible duplicate
     o.coordinates = geometryType[o.type](o.arcs);
     //type is in o's prototype, which will be lost by worker.postMessage
     o.type = o.type
