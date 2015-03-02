@@ -61,21 +61,15 @@
   display: none
 }
 
-
-
-#title {
-  text-align: left;
-  position: relative;
-  left: 50%;
-  margin-left: -380px;
-  width: 800px
+/* Leave some room for the title */
+#leSVG {
+  margin-left: 130px
 }
 
-#chosenYear {
-  color: green;
-  font-weight: 300;
-  position: relative;
-  margin-left: 5px;
+@media (max-width: 1300px) {
+  #leSVG {
+    margin-left: 0
+  }
 }
 
 
@@ -123,23 +117,23 @@ line {
 }
 
 .dragdealer .handle i.pulse:not(.fa-spin) {
-  animation:pulse 3s;
-  -moz-animation:pulse 3s infinite; /* Firefox */
-  -webkit-animation:pulse 3s infinite; /* Safari and Chrome */
+  animation:pulse 2s;
+  -moz-animation:pulse 2s infinite; /* Firefox */
+  -webkit-animation:pulse 2s infinite; /* Safari and Chrome */
 }
 
 @-moz-keyframes pulse /* Firefox */
 {
-  0%   {opacity:1;}
-  50% {opacity: 0.15}
-  100%   {opacity:1;}
+  0%   {opacity: 0.05; }
+  50% {opacity: 1; margin-left: 10px}
+  100%   {opacity: 0.05; }
 }
 
 @-webkit-keyframes pulse /* Safari and Chrome */
 {
-  0%   {opacity:1;}
-  50% {opacity: 0.15}
-  100%   {opacity:1;}
+  0%   {opacity: 0.05; }
+  50% {opacity: 1; margin-left: 10px}
+  100%   {opacity: 0.05; }
 }
 
 .dragdealer .red-bar {
@@ -169,7 +163,7 @@ line {
 
 /* Legend */
 
-.legendBlock {
+#legendBlock {
   color: rgba(255, 255, 255, 0.86);
   width: 400px;
   left: 50%;
@@ -178,23 +172,23 @@ line {
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
 }
-.legendBlock em {
+#legendBlock em {
   color: rgb(157, 157, 157)
 }
 
-.legendBlock p {
+#legendBlock p {
   color: #eee;
   margin-bottom: 3%;
   line-height: 22px
 }
 
-.legendBlock p.info {
+#legendBlock p.info {
   color: #767676;
   font-style: italic;
   font-size: 12px
 }
 
-.legendBlock h3 {
+#legendBlock h3 {
   color: #767676
 }
 
@@ -219,10 +213,49 @@ line {
 
 
 
+#titleBlock {
+  position: absolute;
+  left: 5%;
+  top: 35%;
+  width: 300px
+}
+
+#title {
+  font-size: 70px
+}
+
+#chosenYear {
+  color: green;
+  font-weight: 300;
+  position: relative;
+  margin-left: 5px;
+  font-size: 85px
+}
+
+@media (max-width: 1300px) {
+  #title {
+    font-size: 28px
+  }
+  #titleBlock {
+    top: 5px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    width: 500px
+  }
+  #chosenYear {
+    font-size: 28px
+  }
+
+}
+
+
+
 
 .actions {
   position: absolute;
-  left: 1%;
+  right: 1.5%;
   bottom: 38%
 }
 
@@ -252,6 +285,13 @@ line {
 
 .action#visMode {
   cursor: pointer;
+}
+
+@media (max-width: 1300px) {
+
+  .action i {
+    font-size: 30px
+  }
 }
 
 

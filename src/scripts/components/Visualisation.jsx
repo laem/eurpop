@@ -121,7 +121,6 @@ var Visualisation = React.createClass({
     return (
         <div className={"centered " + this.props.intro + barsMode}>
           <div className="hiddenForIntro">
-            <h1 id="title" className="disabledWhenBars">A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
             <div id="dragContainer">
               <div className="dragdealer" id="timeSlider">
                 <div ref="timeHandle" className={slideClass} onMouseOver={this.handleDiscovered}>
@@ -140,11 +139,17 @@ var Visualisation = React.createClass({
             }
           </div>
 
-          <div className="legendBlock hiddenForIntro disabledWhenBars">
+          <div id="legendBlock" className="hiddenForIntro disabledWhenBars">
             {message}
             <h3><em>Fertility rate</em></h3>
             <ul id="legend"></ul>
           </div>
+
+          <div id="titleBlock" className="hiddenForIntro">
+            <h1 id="title" className="disabledWhenBars">A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
+          </div>
+
+
 
           <div className="actions">
             <div
@@ -234,7 +239,7 @@ var Visualisation = React.createClass({
     function newBrowserSize(){
       var [x, y] = _this.getWindowDimensions();
       if (x * y == 0) return;
-      d3.select("#leSVG").attr("width", x).attr("height", y - 250)
+      d3.select("#leSVG").attr("height", y - 200)
     }
 
     window.onresize = newBrowserSize
