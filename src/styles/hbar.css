@@ -6,6 +6,16 @@
   */
 }
 
+.HBar {
+  margin-left: 150px
+}
+
+@media (max-width: 1300px) {
+  .HBar {
+    margin-left: 0
+  }
+}
+
 .HBar .left {
   fill: white
 }

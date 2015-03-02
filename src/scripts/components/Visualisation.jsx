@@ -146,7 +146,9 @@ var Visualisation = React.createClass({
           </div>
 
           <div id="titleBlock" className="hiddenForIntro">
-            <h1 id="title" className="disabledWhenBars">A map of europeans in <span id="chosenYear">{this.state.year}</span></h1>
+            <h1 id="title">
+              {this.state.barsPlease ? "Europeans in" : "A map of europeans in"} <span id="chosenYear">{this.state.year}</span>
+            </h1>
           </div>
 
 
