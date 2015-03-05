@@ -9,17 +9,18 @@
 var webpack = require('webpack');
 
 module.exports = {
-  output: {
-    publicPath: 'assets/',
-    path: __dirname + '/dist/assets/',
-    filename: 'main.js'
-  },
 
   node: {
     fs: "empty",
     tls: "empty",
     net: "empty",
     //json: "empty"
+  },
+
+  output: {
+    publicPath: 'assets/',
+    path: __dirname + '/dist/assets/',
+    filename: 'main.js'
   },
 
   debug: false,
@@ -45,33 +46,20 @@ module.exports = {
       loader: 'jshint'
     }],
 
-    loaders: [
-      {
-        test: /\.css$/,
-        loader: 'style!css'
-      }, {
-        test: /\.gif/,
-        loader: 'url-loader?limit=10000&mimetype=image/gif'
-      }, {
-        test: /\.jpg/,
-        loader: 'url-loader?limit=10000&mimetype=image/jpg'
-      }, {
-        test: /\.png/,
-        loader: 'url-loader?limit=10000&mimetype=image/png'
-      }, {
-        test: /\.jsx$/,
-        loader: 'jsx-loader'
-      },
-      { test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url-loader?limit=10000&minetype=application/font-woff"
-      },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "file-loader"
-      },
-      { test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
-      }
+    loaders: [{
+      test: /\.css$/,
+      loader: 'style!css'
+    },
+    { test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      loader: "url-loader?limit=10000&minetype=application/font-woff"
+    },
+    { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+      loader: "file-loader"
+    },
+    { test: /\.(js|jsx)$/,
+      exclude: /node_modules/,
+      loader: 'babel-loader'
+    }
     ]
   }
 };

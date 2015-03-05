@@ -5,7 +5,6 @@
   "test": "test",
   "dist": "dist",
   "mainInput": "App",
-  "mainOutput": "main",
   "dependencies": {
     "dragdealer": "~0.9.8",
     "frmttr": "git://github.com/laem/frmttr.git",
