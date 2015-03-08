@@ -45,7 +45,7 @@ function treatSpreadsheet(err, spreadsheet){
 function treatValues(values){
 
   var maxX = 1920,
-      maxY = 1030;
+      maxY = 1080;
 
   var filteredTopojson = filterCountries(topojsonData)
 
@@ -65,8 +65,7 @@ function treatValues(values){
 
   promiseOfGeos.then(function(a){
     //console.log(JSON.stringify(a["1962"]));
-    filteredTopojson.arcs = a["1960"].arcs
-    fs.writeFile('src/data/reshapedEuropeTopojson.json', JSON.stringify(filteredTopojson) , function (err) {
+    fs.writeFile('src/data/reshapedEurope.json', JSON.stringify(a) , function (err) {
       if (err) throw err
       console.log("file saved")
     });

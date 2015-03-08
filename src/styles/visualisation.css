@@ -114,6 +114,7 @@ line {
   top: 0;
   left: 0;
   cursor: pointer;
+  z-index: 1
 }
 
 .dragdealer .handle i.pulse:not(.fa-spin) {
@@ -172,14 +173,18 @@ line {
   -ms-transform: translateX(-50%);
   transform: translateX(-50%);
 }
+
+#countryName {
+  font-weight: bold
+}
+
 #legendBlock em {
   color: rgb(157, 157, 157)
 }
 
 #legendBlock p {
   color: #eee;
-  margin-bottom: 3%;
-  line-height: 22px
+  line-height: 22px;
 }
 
 #legendBlock p.info {

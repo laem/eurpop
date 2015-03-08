@@ -101,7 +101,7 @@ var Visualisation = React.createClass({
 
       message = (
         <p>
-          {name} {verb}
+          <span id="countryName">{name}</span> {verb}
           <span title={pop.alt}> {pop.regular} </span>
           citizens in {this.state.year}, <br/>
           a fertility rate of
@@ -141,7 +141,6 @@ var Visualisation = React.createClass({
 
           <div id="legendBlock" className="hiddenForIntro disabledWhenBars">
             {message}
-            <h3><em>Fertility rate</em></h3>
             <ul id="legend"></ul>
           </div>
 
@@ -224,7 +223,7 @@ var Visualisation = React.createClass({
       <HBar
         data={data}
         width={window.screen.availWidth * 2 / 3}
-        height={window.screen.availHeight - 260}
+        height={window.screen.availHeight - 230}
         sort="descending"
         formatter={formatter}
         flash="true"
@@ -241,7 +240,7 @@ var Visualisation = React.createClass({
     function newBrowserSize(){
       var [x, y] = _this.getWindowDimensions();
       if (x * y == 0) return;
-      d3.select("#leSVG").attr("height", y - 200)
+      d3.select("#leSVG").attr("height", y - 140)
     }
 
     window.onresize = newBrowserSize
@@ -250,8 +249,12 @@ var Visualisation = React.createClass({
 
     function draw(){
 
-      var maxX = window.screen.availWidth
-      var maxY = window.screen.availHeight
+      /* Fixed to the highest common resolution at the time of writing,
+         since shapes can also be computed offline without screen resolution
+         knowledge
+      */
+      var maxX = 1920 //window.screen.availWidth
+      var maxY = 1080 //window.screen.availHeight
 
       var year = _this.state.year;
 
@@ -277,14 +280,13 @@ var Visualisation = React.createClass({
           //map of featureId -> area
           values[year] = _this.getValuesForYear('population', year)
         }
-
         var promiseOfGeos = cartogramaster({
             topology: _this.topojsonData,
             geometries: _this.topojsonData.objects.admin0.geometries,
             projection: {
               name: 'mercator',
-              translation: [0.35 * maxX, 1.95 * maxY],
-              scaling: maxY * 1.5
+              translation: [0.35 * maxX, 1.95 * maxY], //topojson-specific I guess
+              scaling: maxY * 1.5 //topojson-specific I guess
             }
           },
           values,
@@ -366,6 +368,8 @@ var Visualisation = React.createClass({
         var colors = d3.scale.quantize()
         .range(colorbrewer.RdYlGn[7])
         .domain([1., 2.1])
+        // 2.1 : seuil de renouvellement des générations dans les pays développés
+        // http://fr.wikipedia.org/wiki/Taux_de_f%C3%A9condit%C3%A9
 
         var legend = d3.select('#legend')
         legend.selectAll('*').remove()
