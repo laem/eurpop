@@ -13,7 +13,7 @@ Fertility rate estimates span half decades.
 Notes
 -----------------
 *This is just an experiment*, not scientific work, with important flaws.
-Country boundaries have evolved in that period of time (see [this page](./changements.md) for a broad list), the actual (2015) state is used as a reference.
+Country boundaries have evolved in that period of time (see [this page](./src/data/changements.md) for a broad list), the actual (2015) state is used as a reference.
 This is a UE+Switzerland selection of countries. Some islands are not drawn (sorry, Corsica). Boundaries are simplified.
 
 Tech
