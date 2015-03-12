@@ -79,7 +79,11 @@ var Visualisation = React.createClass({
   },
 
   handleDiscovered: function(){
-    this.setState({handleDiscovery: ''})
+    if (this.state.handleDiscovery === ' pulse'){
+        this.setState({handleDiscovery: ' hint'})
+        setTimeout(() => this.setState({ handleDiscovery: ''}), 3000)
+    }
+
   },
 
   /*******************
@@ -110,7 +114,7 @@ var Visualisation = React.createClass({
       )
     }
     var slideClass = this.state.year > year ? 'handle red-bar estimate' : 'handle red-bar'
-    var handleClass =
+    var handleIconClass =
       this.state.processed || this.state.barsPlease  ?
         (this.state.year > year ? 'fa fa-angle-double-right ' : 'fa fa-long-arrow-right')
                             :
@@ -123,8 +127,8 @@ var Visualisation = React.createClass({
           <div className="hiddenForIntro">
             <div id="dragContainer">
               <div className="dragdealer" id="timeSlider">
-                <div ref="timeHandle" className={slideClass} onMouseOver={this.handleDiscovered}>
-                  <i className={handleClass + this.state.handleDiscovery}></i>
+                <div ref="timeHandle" className={slideClass + this.state.handleDiscovery} onMouseOver={this.handleDiscovered}>
+                  <i className={handleIconClass}></i>
                 </div>
               </div>
             </div>

@@ -117,7 +117,16 @@ line {
   z-index: 1
 }
 
-.dragdealer .handle i.pulse:not(.fa-spin) {
+.dragdealer .handle.hint::after {
+    content: 'drag me !';
+    opacity: 0.8;
+    font-size: 14px;
+    font-weight: 200;
+    display: block;
+    line-height: 18px
+}
+
+.dragdealer .handle.pulse i:not(.fa-spin) {
   animation:pulse 2s;
   -moz-animation:pulse 2s infinite; /* Firefox */
   -webkit-animation:pulse 2s infinite; /* Safari and Chrome */
