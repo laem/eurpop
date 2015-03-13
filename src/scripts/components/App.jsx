@@ -48,7 +48,7 @@ var App = React.createClass({
   getInitialState: function(){
     return {
       ds: null,
-      introduced: 'yes',
+      introduced: '1',
       preprocessed: true
     }
   },
