@@ -19,7 +19,7 @@ module.exports = {
 
   output: {
     publicPath: 'assets/',
-    path: __dirname + '/assets/',
+    path: __dirname + '/dist/assets/',
     filename: 'main.js'
   },
 
