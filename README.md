@@ -38,3 +38,10 @@ Please fork it ! Some evolution ideas :
 	- step 3) above
 	- adapt the page's text
 	- (harder) let the user visualise any indicator retrieved through an API
+
+To run it locally, simply run
+```
+npm install
+grunt serve
+```
+and visit localhost:8000.
